@@ -35,7 +35,10 @@
             ];
 
             shellHook = ''
-              export PS1="(sfd) $PS1"
+              case "$PS1" in
+              "(sfd) "*) ;;
+              *) export PS1="(sfd) $PS1" ;;
+              esac
             '';
           };
         }
