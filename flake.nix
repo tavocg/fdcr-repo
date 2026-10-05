@@ -33,6 +33,10 @@
               binutils
               git-lfs
             ];
+
+            shellHook = ''
+              export PS1="(sfd) $PS1"
+            '';
           };
         }
       );
