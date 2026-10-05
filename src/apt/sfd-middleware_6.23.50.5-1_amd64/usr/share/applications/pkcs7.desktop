@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Open PKCS#7
+Comment=Open P7/P7M/P7S with SCManager
+Exec=/usr/bin/python3 /usr/share/SCMiddleware/open_pkcs7.py %f
+Terminal=false
+Type=Application
+MimeType=application/pkcs7-mime;application/pkcs7-signature;
+NoDisplay=false
