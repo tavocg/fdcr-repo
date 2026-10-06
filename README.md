@@ -38,6 +38,22 @@ separate `src/artix/` tree if an Arch package does not work on Artix.
 gpg --armor --export "$GPG_KEY_ID" > public/fdcr.asc
 ```
 
+## Nix
+
+Allow unfree packages in your Nix configuration before installing the
+proprietary middleware. To install the latest version:
+
+```sh
+NIXPKGS_ALLOW_UNFREE=1 nix profile add --impure github:tavocg/fdcr-repo#fdcr-middleware-idopte
+```
+
+To pin a version, use its versioned attribute, such as
+`fdcr-middleware-idopte-6.23.50.5-1`:
+
+```sh
+NIXPKGS_ALLOW_UNFREE=1 nix profile add --impure github:tavocg/fdcr-repo#fdcr-middleware-idopte-6.23.50.5-1
+```
+
 ## Clients
 
 If `public/` is published at `https://example.com/`.
