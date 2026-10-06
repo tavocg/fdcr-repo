@@ -1,0 +1,14 @@
+pkgname=fdcr-middleware-idopte
+pkgver=6.23.50.5
+pkgrel=1
+pkgdesc='Middleware PKCS#11 Idopte para firma digital de Costa Rica'
+arch=('x86_64')
+url='https://www.soportefirmadigital.com/'
+license=('LicenseRef-Proprietary')
+depends=('glibc>=2.38' 'gcc-libs>=13.2' 'pcsclite>=1.7' 'libxml2>=2.7.3'
+         'zlib>=1.2.3.4' 'ccid')
+options=('!strip')
+
+package() {
+  cp -a "$startdir/rootfs/." "$pkgdir/"
+}
