@@ -18,9 +18,9 @@ set -eu
 POOL="$PUBLIC/pool/$COMPONENT"            # ./public/apt/pool/main
 DIST="$PUBLIC/dists/$CODENAME/$COMPONENT" # ./public/apt/dists/stable/main
 
-# build_deb_package() builds a deb package given it's directory path with format:
-# build_deb_package "/path/to/firmador_1.0.0_amd64"
-# -> Creates `$POOL/firmador_1.0.0_amd64.deb`
+# Build one Debian package from a directory containing its package tree.
+# Argument: package directory (for example, /path/to/firmador_1.0.0_amd64).
+# Output: writes the .deb file into $POOL; returns nonzero on failure.
 build_deb_package() {
   pkg_dir="$1"
 
@@ -31,6 +31,8 @@ build_deb_package() {
   dpkg-deb --root-owner-group --build "$pkg_dir" "$POOL" >&2
 }
 
+# Print a whitespace-separated list with $2 appended only if it is not present.
+# Arguments: existing list and value to append. Output: updated list on stdout.
 append_once() {
   arr="$1"
   val="$2"
@@ -49,7 +51,9 @@ append_once() {
   printf '%s\n' "$arr"
 }
 
-# build_deb_packages() builds al deb packages from sources in `$SOURCE`
+# Build every package directory under $SOURCE and collect its architecture.
+# Output: unique, whitespace-separated architecture names on stdout.
+# Returns nonzero if a package build fails or no package directories exist.
 build_deb_packages() {
   arches=""
   found_package=false
@@ -71,6 +75,8 @@ build_deb_packages() {
   printf '%s' "$arches"
 }
 
+# Generate Packages and Packages.gz for one architecture.
+# Argument: architecture name. Writes the indexes below $DIST.
 gen_arch_index() {
   arch="$1"
 
@@ -88,12 +94,16 @@ gen_arch_index() {
   )
 }
 
+# Generate package indexes for each architecture argument.
+# Arguments: one or more architecture names.
 gen_arch_indexes() {
   for arch in "$@"; do
     gen_arch_index "$arch"
   done
 }
 
+# Write the repository Release metadata using the supplied architectures.
+# Arguments: one or more architecture names. Writes $DIST/Release.
 gen_release() {
   arches="$*"
 
@@ -109,6 +119,8 @@ gen_release() {
     >"$DIST/Release"
 }
 
+# Sign $DIST/Release as InRelease and Release.gpg using $GPG_KEY_ID.
+# Returns nonzero when no key is configured or signing fails.
 sign_release() {
   if [ -z "$GPG_KEY_ID" ]; then
     return 1
@@ -138,6 +150,8 @@ sign_release() {
     "$dist/Release"
 }
 
+# Build apt repository.
+# Creates public/apt/ folder by default with the required structure for hosting.
 main() {
   mkdir -p "$POOL" "$DIST"
 
