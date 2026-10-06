@@ -96,10 +96,10 @@ extract_archive() {
   destination="$2"
 
   case "$archive" in
-  *.tar.bz2|*.tbz2) tar -xjf "$archive" -C "$destination" ;;
+  *.tar.bz2 | *.tbz2) tar -xjf "$archive" -C "$destination" ;;
   *.tar.zst) tar --zstd -xf "$archive" -C "$destination" ;;
   *.tar.xz) tar -xJf "$archive" -C "$destination" ;;
-  *.tar.gz|*.tgz) tar -xzf "$archive" -C "$destination" ;;
+  *.tar.gz | *.tgz) tar -xzf "$archive" -C "$destination" ;;
   *.tar) tar -xf "$archive" -C "$destination" ;;
   *.rar) (cd "$destination" && unrar x "$archive") ;;
   *.zip) unzip -q "$archive" -d "$destination" ;;
@@ -109,7 +109,10 @@ extract_archive() {
   *.gz) (cd "$destination" && gzip -dk "$archive") ;;
   *.xz) (cd "$destination" && xz -dk "$archive") ;;
   *.Z) (cd "$destination" && uncompress -c "$archive" >"$destination/${archive##*/}") ;;
-  *) printf 'Unsupported archive: %s\n' "$archive" >&2; return 1 ;;
+  *)
+    printf 'Unsupported archive: %s\n' "$archive" >&2
+    return 1
+    ;;
   esac
 }
 
