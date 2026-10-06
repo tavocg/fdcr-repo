@@ -92,7 +92,7 @@ gen_arch_indexes() {
 }
 
 gen_release() {
-	arches="$*"
+  arches="$*"
 
   apt-ftparchive \
     -o "APT::FTPArchive::Release::Origin=$ORIGIN" \
@@ -137,10 +137,12 @@ sign_release() {
 
 main() {
   mkdir -p "$POOL" "$DIST"
-	arches="$(build_deb_packages)"
-	set -- $arches
-	gen_arch_indexes "$@"
-	gen_release "$@"
+
+  arches="$(build_deb_packages)"
+  set -- $arches
+  gen_arch_indexes "$@"
+  gen_release "$@"
+
   if [ -n "$GPG_KEY_ID" ]; then
     sign_release
   fi
