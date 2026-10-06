@@ -1,8 +1,9 @@
 #!/bin/sh
-set -eu
-
 # External programs required: rpmbuild, createrepo_c, tar, cp, and mktemp.
 # Optional: gpg, required only when GPG_KEY_ID is set.
+
+set -eu
+
 : "${SOURCE:=./src/rpm}"
 : "${PUBLIC:=./public/rpm}"
 : "${GPG_KEY_ID:=}"
