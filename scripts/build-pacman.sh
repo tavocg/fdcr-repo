@@ -12,9 +12,11 @@ set -eu
 # Run makepkg with the optional provided config and GPG signing.
 run_makepkg() {
   set -- --nodeps "$@"
+
   if [ -n "$MAKEPKG_CONF" ]; then
     set -- --config "$MAKEPKG_CONF" "$@"
   fi
+
   if [ -n "$GPG_KEY_ID" ]; then
     makepkg "$@" "PKGDEST=$PUBLIC" --sign --key "$GPG_KEY_ID"
   else
@@ -55,9 +57,11 @@ gen_pacman_repository() {
   set --
   for package_file in "$PUBLIC"/*.pkg.tar.*; do
     [ -f "$package_file" ] || continue
+
     case "$package_file" in
-      *.sig) continue ;;
+    *.sig) continue ;;
     esac
+
     set -- "$@" "$package_file"
   done
 
@@ -79,12 +83,14 @@ gen_pacman_repository() {
 main() {
   mkdir -p "$PUBLIC"
   PUBLIC=$(CDPATH= cd "$PUBLIC" && pwd)
+
   if [ -z "$GPG_KEY_ID" ]; then
     for signature_file in "$PUBLIC"/*.pkg.tar.*.sig; do
       [ -f "$signature_file" ] || continue
       rm -f "$signature_file"
     done
   fi
+
   build_pacman_packages
   gen_pacman_repository
 }
