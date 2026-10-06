@@ -22,7 +22,7 @@ append_once() {
   printf '%s\n' "$arr"
 }
 
-files() {
+file_list() {
   dir_path="$1"
   exclude_file_path="$2"
 
@@ -36,15 +36,12 @@ files() {
   fi
 
   base_dir=$(pwd)
-
   (
     cd "$dir_path"
 
     found_file=
-
     find . -type f | while IFS= read -r line; do
       ignored=
-
       if [ "$exclude" ]; then
         while IFS= read -r ignored_line; do
           if [ "$line" = "$ignored_line" ]; then
@@ -68,6 +65,23 @@ files() {
   )
 }
 
+sha256sums() {
+  file_list="$1"
+  dir_path="${2:-.}"
+
+  (
+    cd "$dir_path"
+
+    sums=
+    for file in $file_list; do
+      sum=$(sha256sum "$file" | awk '{print $1}')
+      sums=$(append_once "$sums" "$sum")
+    done
+
+    printf '%s\n' "$sums"
+  )
+}
+
 cmp_sum() {
   source="$1"
   target="$2"
@@ -82,6 +96,11 @@ cmp_sum() {
   return 0
 }
 
-files \
-  "src/apt/fdcr-middleware-idopte_6.23.50.5-1_amd64" \
-  "src/apt/fdcr-middleware-idopte_6.23.50.5-1_amd64.exclude"
+dir="src/apt/fdcr-middleware-idopte_6.23.50.5-1_amd64"
+exclude="src/apt/fdcr-middleware-idopte_6.23.50.5-1_amd64.exclude"
+
+files="$(file_list "$dir" "$exclude")"
+
+sums="$(sha256sums "$files" "$dir")"
+
+printf '%s\n' "$sums"
