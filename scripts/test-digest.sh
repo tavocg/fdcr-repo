@@ -83,11 +83,11 @@ sha256sums() {
 }
 
 cmp_sum() {
-  source="$1"
-  target="$2"
+  trusted="$1"
+  untrusted="$2"
 
-  for digest in $source; do
-    case " $target " in
+  for digest in $untrusted; do
+    case " $trusted " in
     *" $digest "*) ;;
     *) return 1 ;;
     esac
