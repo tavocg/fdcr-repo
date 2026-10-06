@@ -37,6 +37,7 @@
             ];
 
             shellHook = ''
+              export MAKEPKG_CONF="${pkgs.pacman}/etc/makepkg.conf"
               case "$PS1" in
               "(fdcr) "*) ;;
               *) export PS1="(fdcr) $PS1" ;;

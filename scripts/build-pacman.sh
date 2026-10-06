@@ -7,6 +7,19 @@ set -eu
 : "${SOURCE:=./src/pacman}"
 : "${PUBLIC:=./public/pacman}"
 : "${GPG_KEY_ID:=}"
+: "${MAKEPKG_CONF:=}"
+
+# Run makepkg with the optional provided config and GPG signing.
+run_makepkg() {
+  if [ -n "$MAKEPKG_CONF" ]; then
+    set -- --config "$MAKEPKG_CONF" "$@"
+  fi
+  if [ -n "$GPG_KEY_ID" ]; then
+    makepkg "$@" --sign --key "$GPG_KEY_ID"
+  else
+    makepkg "$@"
+  fi
+}
 
 # Build one PKGBUILD and copy its package files into $PUBLIC.
 # Argument: path to a PKGBUILD file.
@@ -14,15 +27,8 @@ build_pacman_package() (
   pkgbuild="$1"
   pkg_dir="${pkgbuild%/*}"
 
-  (
-    cd "$pkg_dir"
-
-    if [ -n "$GPG_KEY_ID" ]; then
-      makepkg --clean --force --sign --key "$GPG_KEY_ID"
-    else
-      makepkg --clean --force
-    fi
-  )
+  cd "$pkg_dir"
+  run_makepkg --clean --force
 
   found_package=false
   for package_file in "$pkg_dir"/*.pkg.tar.zst; do
