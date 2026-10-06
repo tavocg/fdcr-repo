@@ -12,12 +12,15 @@ set -eu
 build_rpm_package() {
   pkg_dir="$1"
   spec_file=""
+
   for candidate in "$pkg_dir"/*.spec; do
     [ -f "$candidate" ] || continue
+
     if [ -n "$spec_file" ]; then
       printf 'More than one spec file found in %s\n' "$pkg_dir" >&2
       return 1
     fi
+
     spec_file="$candidate"
   done
 
@@ -38,7 +41,9 @@ build_rpm_package() {
     cp "$rpm_file" "$PUBLIC/"
     found_rpm=true
   done
+
   rm -rf "$topdir"
+
   if [ "$found_rpm" = false ]; then
     printf 'rpmbuild produced no RPM for %s\n' "$pkg_dir" >&2
     return 1
@@ -49,11 +54,13 @@ build_rpm_package() {
 # Returns nonzero if a build fails or no source packages are present.
 build_rpm_packages() {
   found_package=false
+
   for pkg_dir in "$SOURCE"/*; do
     [ -d "$pkg_dir" ] || continue
     found_package=true
     build_rpm_package "$pkg_dir"
   done
+
   if [ "$found_package" = false ]; then
     printf 'No RPM source packages found in %s\n' "$SOURCE" >&2
     return 1
@@ -64,11 +71,14 @@ build_rpm_packages() {
 # Uses createrepo_c; GPG_KEY_ID enables the detached metadata signature.
 gen_rpm_repository() {
   createrepo_c --update "$PUBLIC"
-  if [ -n "$GPG_KEY_ID" ]; then
-    gpg --batch --yes --local-user "$GPG_KEY_ID" --armor --detach-sign \
-      --output "$PUBLIC/repodata/repomd.xml.asc" \
-      "$PUBLIC/repodata/repomd.xml"
+
+  if [ -z "$GPG_KEY_ID" ]; then
+    return 1
   fi
+
+  gpg --batch --yes --local-user "$GPG_KEY_ID" --armor --detach-sign \
+    --output "$PUBLIC/repodata/repomd.xml.asc" \
+    "$PUBLIC/repodata/repomd.xml"
 }
 
 # Build all RPMs from $SOURCE and update the repository in $PUBLIC.
