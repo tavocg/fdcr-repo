@@ -25,6 +25,18 @@
           default = pkgs.mkShell {
             packages = with pkgs; [
               python3
+              coreutils
+              findutils
+              gnutar
+              gzip
+              bzip2
+              xz
+              zstd
+              unzip
+              unar
+              p7zip
+              cpio
+              ncompress
               rpm
               dpkg
               createrepo_c
