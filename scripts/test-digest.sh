@@ -4,6 +4,8 @@ set -eu
 
 : "${SOURCE:=./src}"
 
+# Append a value to a whitespace-separated list only if it is not already present.
+# Arguments: current list and value to append. Prints the updated list.
 append_once() {
   arr="$1"
   val="$2"
@@ -22,6 +24,8 @@ append_once() {
   printf '%s\n' "$arr"
 }
 
+# List regular files under a directory, omitting paths listed in an optional exclude file.
+# Arguments: directory and optional exclude-file path. Prints a whitespace-separated list.
 file_list() {
   dir_path="$1"
   exclude_file_path="$2"
@@ -65,6 +69,8 @@ file_list() {
   )
 }
 
+# Calculate the unique SHA-256 digests for a whitespace-separated list of files.
+# Arguments: file list and directory in which those relative paths are located.
 sha256sums() {
   file_list="$1"
   dir_path="${2:-.}"
@@ -82,6 +88,8 @@ sha256sums() {
   )
 }
 
+# Extract a supported archive into a destination directory.
+# Arguments: archive path and destination directory. Returns nonzero on failure.
 extract_archive() {
   archive="$1"
   destination="$2"
@@ -104,6 +112,8 @@ extract_archive() {
   esac
 }
 
+# Check that every digest in the untrusted list exists in the trusted list.
+# Arguments: trusted digest list and untrusted digest list.
 cmp_sum() {
   trusted="$1"
   untrusted="$2"
@@ -118,6 +128,7 @@ cmp_sum() {
   return 0
 }
 
+# Verify every .md5 checksum file found beneath SOURCE; stop on the first failure.
 verify_md5_files() {
   find "$SOURCE" -type f -name '*.md5' -print | while IFS= read -r md5_file; do
     md5_dir=${md5_file%/*}
@@ -132,6 +143,8 @@ verify_md5_files() {
   done
 }
 
+# Compare a package directory's file digests against its sibling source archive.
+# Argument: package directory. Uses a sibling .exclude file when present.
 verify_package() {
   package_dir="$1"
   package_name=${package_dir##*/}
@@ -176,8 +189,10 @@ verify_package() {
 }
 
 main() {
+  # First confirm each source archive against its adjacent MD5 checksum.
   verify_md5_files
 
+  # Then check each package directory directly beneath a package manager directory.
   find "$SOURCE" -mindepth 2 -maxdepth 2 -type d -print | while IFS= read -r package_dir; do
     verify_package "$package_dir"
   done
