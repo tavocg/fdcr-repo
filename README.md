@@ -1,5 +1,7 @@
 # fdcr-repo
 
+Repositorio de dependencias para Firma Digital en Costa Rica
+
 ## Building repositories
 
 Build all repositories with the signing key available in your GPG keyring:
