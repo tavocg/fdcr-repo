@@ -114,7 +114,7 @@ extract_archive() {
   *.tar.xz) tar -xJf "$archive" -C "$destination" ;;
   *.tar.gz | *.tgz) tar -xzf "$archive" -C "$destination" ;;
   *.tar) tar -xf "$archive" -C "$destination" ;;
-  *.rar) unrar x -o+ "$archive" "$destination/" ;;
+  *.rar) unar -o "$destination" "$archive" ;;
   *.zip) unzip -q "$archive" -d "$destination" ;;
   *.deb) (cd "$destination" && ar x "$archive") ;;
   *.rpm) (cd "$destination" && rpm2cpio "$archive" | cpio -idm --quiet) ;;
