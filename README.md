@@ -5,15 +5,16 @@
 Build all repositories with the signing key available in your GPG keyring:
 
 ```sh
-GPG_KEY_ID="YOUR_SIGNING_KEY_ID" ./scripts/build-apt.sh
-GPG_KEY_ID="YOUR_SIGNING_KEY_ID" ./scripts/build-rpm.sh
-GPG_KEY_ID="YOUR_SIGNING_KEY_ID" ./scripts/build-pacman.sh
+GPG_KEY_ID="YOUR_SIGNING_KEY_ID"
+GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-apt.sh
+GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-rpm.sh
+GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-pacman.sh
 ```
 
 The scripts create `public/apt/`, `public/rpm/`, and `public/pacman/`.
 
 ```sh
-gpg --armor --export "YOUR_SIGNING_KEY_ID" > public/fdcr.asc
+gpg --armor --export "$GPG_KEY_ID" > public/fdcr.asc
 ```
 
 ## Clients
