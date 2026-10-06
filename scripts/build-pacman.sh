@@ -61,14 +61,14 @@ build_pacman_package() (
 build_pacman_packages() (
   found_package=false
 
-  for pkgbuild in "$SOURCE"/*/*/PKGBUILD; do
+  for pkgbuild in "$SOURCE"/*/PKGBUILD; do
     [ -f "$pkgbuild" ] || continue
     found_package=true
     build_pacman_package "$pkgbuild"
   done
 
   if [ "$found_package" = false ]; then
-    printf 'No versioned PKGBUILD files found under %s\n' "$SOURCE" >&2
+    printf 'No PKGBUILD files found under %s\n' "$SOURCE" >&2
     return 1
   fi
 )
