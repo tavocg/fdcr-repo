@@ -59,7 +59,7 @@
                 libappindicator-gtk3
                 libnotify
                 libpng
-                libxml2
+                libxml2_13
                 pcsclite
                 webkitgtk_4_1
                 zlib
