@@ -12,6 +12,10 @@ dnf: scripts/build-dnf.sh
 pacman: scripts/build-pacman.sh
 	@./$<
 
+.PHONY: test
+test: scripts/test-digest.sh
+	@./$<
+
 .PHONY: clean
 clean:
 	rm -rf public
