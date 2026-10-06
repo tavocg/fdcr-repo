@@ -101,6 +101,12 @@ EOF
 extract_archive() {
   archive="$1"
   destination="$2"
+  case "$archive" in
+  /*) ;;
+  *) archive="$(pwd)/$archive" ;;
+  esac
+
+  archive_name=${archive##*/}
 
   case "$archive" in
   *.tar.bz2 | *.tbz2) tar -xjf "$archive" -C "$destination" ;;
@@ -108,19 +114,47 @@ extract_archive() {
   *.tar.xz) tar -xJf "$archive" -C "$destination" ;;
   *.tar.gz | *.tgz) tar -xzf "$archive" -C "$destination" ;;
   *.tar) tar -xf "$archive" -C "$destination" ;;
-  *.rar) (cd "$destination" && unrar x "$archive") ;;
+  *.rar) unrar x -o+ "$archive" "$destination/" ;;
   *.zip) unzip -q "$archive" -d "$destination" ;;
   *.deb) (cd "$destination" && ar x "$archive") ;;
-  *.bz2) (cd "$destination" && bunzip2 -k "$archive") ;;
+  *.rpm) (cd "$destination" && rpm2cpio "$archive" | cpio -idm --quiet) ;;
+  *.bz2) bunzip2 -c "$archive" >"$destination/${archive_name%.bz2}" ;;
   *.7z) 7z x -y "-o$destination" "$archive" >/dev/null ;;
-  *.gz) (cd "$destination" && gzip -dk "$archive") ;;
-  *.xz) (cd "$destination" && xz -dk "$archive") ;;
-  *.Z) (cd "$destination" && uncompress -c "$archive" >"$destination/${archive##*/}") ;;
+  *.gz) gzip -dc "$archive" >"$destination/${archive_name%.gz}" ;;
+  *.xz) xz -dc "$archive" >"$destination/${archive_name%.xz}" ;;
+  *.Z) uncompress -c "$archive" >"$destination/${archive_name%.Z}" ;;
   *)
     printf 'Unsupported archive: %s\n' "$archive" >&2
     return 1
     ;;
   esac
+}
+
+# Recursively digest files and expand any supported archives found in a directory.
+# Argument: directory to scan. Prints one SHA-256 digest per discovered file.
+trusted_digests() {
+  directory="$1"
+
+  find "$directory" -type f -print | while IFS= read -r file; do
+    digest=$(sha256sum "$file") || exit 1
+    printf '%s\n' "${digest%% *}"
+
+    case "$file" in
+    *.tar.bz2|*.tbz2|*.tar.zst|*.tar.xz|*.tar.gz|*.tgz|*.tar|*.rar|*.zip|*.deb|*.rpm|*.bz2|*.7z|*.gz|*.xz|*.Z)
+      nested_dir=$(mktemp -d "${TMPDIR:-/tmp}/test-digest-nested.XXXXXX") || exit 1
+      if extract_archive "$file" "$nested_dir"; then
+        trusted_digests "$nested_dir" || {
+          rm -rf "$nested_dir"
+          exit 1
+        }
+        rm -rf "$nested_dir"
+      else
+        rm -rf "$nested_dir"
+        exit 1
+      fi
+      ;;
+    esac
+  done
 }
 
 # Verify each package file's SHA-256 against the digests found in the extracted source.
@@ -199,8 +233,7 @@ verify_package() {
   fi
 
   package_files=$(file_list "$payload_dir" "$exclude")
-  source_files=$(file_list "$temp_dir" "")
-  source_sums=$(sha256sums "$source_files" "$temp_dir")
+  source_sums=$(trusted_digests "$temp_dir")
 
   if ! verify_file_digests "$package_files" "$payload_dir" "$source_sums"; then
     printf 'Package files do not match source archive: %s\n' "$package_dir" >&2
