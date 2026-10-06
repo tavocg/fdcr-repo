@@ -1,0 +1,7 @@
+Package: fdcr-middleware-idopte
+Version: 6.23.50.5-1ubuntu22.04
+Architecture: amd64
+Maintainer: Soporte Firma Digital
+Depends: libc6 (>= 2.15), libgcc1 (>= 1:4.6), libstdc++6 (>= 4.6), libpcsclite1 (>= 1.7), pcscd, libwebkit2gtk-4.0-37, libnotify4, libappindicator3-1, lsof, python3-nautilus, zenity, xdg-utils
+Homepage: https://www.soportefirmadigital.com/
+Description: Middleware PKCS#11 Idopte para firma digital de Costa Rica
