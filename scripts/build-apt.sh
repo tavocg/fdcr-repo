@@ -53,6 +53,7 @@ append_once() {
 build_deb_packages() {
   arches=""
   found_package=false
+
   for pkg_dir in "$SOURCE"/*; do
     [ -d "$pkg_dir" ] || continue
     found_package=true
@@ -61,10 +62,12 @@ build_deb_packages() {
     arch="${arch##*_}"
     arches="$(append_once "$arches" "$arch")"
   done
+
   if [ "$found_package" = false ]; then
     printf 'No package directories found in %s\n' "$SOURCE" >&2
     return 1
   fi
+
   printf '%s' "$arches"
 }
 
