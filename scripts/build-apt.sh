@@ -10,20 +10,20 @@ set -eu
 
 : "${ORIGIN:=Soporte Firma Digital}"
 : "${LABEL:=Repositorio APT de Soporte Firma Digital}"
-: "${TARGET_RELEASE:=noble}"
+: "${CODENAME:=noble}"
 : "${REPO_COMPONENT:=main}"
 : "${DESCRIPTION:=Repositorio oficial de paquetes de Soporte Firma Digital}"
 : "${SOURCE:=./src/ubuntu-noble}"
-: "${PUBLIC:=./public/apt}"
+: "${PUBLIC:=./public/$CODENAME}"
 
 # Optional.
 # Example:
 #   GPG_KEY_ID="ABCDEF1234567890" ./build-apt.sh
 : "${GPG_KEY_ID:=}"
 
-POOL="$PUBLIC/pool/$REPO_COMPONENT"         # ./public/apt/pool/main
-RELEASE_DIR="$PUBLIC/dists/$TARGET_RELEASE" # ./public/apt/dists/noble
-DIST="$RELEASE_DIR/$REPO_COMPONENT"         # ./public/apt/dists/noble/main
+POOL="$PUBLIC/pool/$REPO_COMPONENT"   # ./public/noble/pool/main
+RELEASE_DIR="$PUBLIC/dists/$CODENAME" # ./public/noble/dists/noble
+DIST="$RELEASE_DIR/$REPO_COMPONENT"   # ./public/noble/dists/noble/main
 
 # Build one Debian package from a directory containing its package tree.
 # Argument: package directory (for example, /path/to/firmador_1.0.0_amd64).
@@ -89,7 +89,7 @@ build_deb_packages() {
 gen_arch_index() {
   arch="$1"
 
-  dist_abs="$DIST/binary-$arch" # ./public/apt/dists/noble/main/binary-amd64
+  dist_abs="$DIST/binary-$arch" # ./public/noble/dists/noble/main/binary-amd64
   mkdir -p "$dist_abs"
 
   pool="pool/$REPO_COMPONENT"
@@ -119,8 +119,8 @@ gen_release() {
   apt-ftparchive \
     -o "APT::FTPArchive::Release::Origin=$ORIGIN" \
     -o "APT::FTPArchive::Release::Label=$LABEL" \
-    -o "APT::FTPArchive::Release::Suite=$TARGET_RELEASE" \
-    -o "APT::FTPArchive::Release::Codename=$TARGET_RELEASE" \
+    -o "APT::FTPArchive::Release::Suite=$CODENAME" \
+    -o "APT::FTPArchive::Release::Codename=$CODENAME" \
     -o "APT::FTPArchive::Release::Architectures=$arches" \
     -o "APT::FTPArchive::Release::Components=$REPO_COMPONENT" \
     -o "APT::FTPArchive::Release::Description=$DESCRIPTION" \
@@ -164,7 +164,7 @@ sign_release() {
 }
 
 # Build apt repository.
-# Creates public/apt/ folder by default with the required structure for hosting.
+# Creates the codename-specific public folder with the APT repository structure.
 main() {
   mkdir -p "$POOL" "$DIST"
 

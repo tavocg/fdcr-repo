@@ -9,7 +9,7 @@ fi
 set -eu
 
 : "${SOURCE:=./src/arch}"
-: "${PUBLIC:=./public/pacman}"
+: "${PUBLIC:=./public/arch}"
 : "${GPG_KEY_ID:=}"
 : "${MAKEPKG_CONF:=}"
 

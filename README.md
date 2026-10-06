@@ -18,7 +18,8 @@ builder with release-specific source trees and repository metadata. Additional
 Ubuntu releases can use that builder with their own source directory, suite,
 and codename.
 
-The scripts create `public/apt/`, `public/dnf/`, and `public/pacman/`.
+The build targets create separate repositories in `public/noble/`,
+`public/jammy/`, `public/centos-stream-9/`, and `public/arch/`.
 
 Source packages are organized by target distribution and release, rather than
 by package format:
@@ -50,7 +51,7 @@ If `public/` is published at `https://example.com/`.
 
 2. Install repo
   ```sh
-  echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/fdcr.asc] https://example.com/apt noble main' | sudo tee /etc/apt/sources.list.d/fdcr.list
+  echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/fdcr.asc] https://example.com/noble noble main' | sudo tee /etc/apt/sources.list.d/fdcr.list
   ```
 
 3. Update sources
@@ -76,7 +77,7 @@ If `public/` is published at `https://example.com/`.
   sudo tee /etc/yum.repos.d/fdcr.repo > /dev/null <<'INI'
   [fdcr]
   name=Soporte Firma Digital
-  baseurl=https://example.com/dnf/
+  baseurl=https://example.com/centos-stream-9/
   enabled=1
   gpgcheck=0
   repo_gpgcheck=1
@@ -110,7 +111,7 @@ If `public/` is published at `https://example.com/`.
   ```ini
   [fdcr]
   SigLevel = Required
-  Server = https://example.com/pacman/
+  Server = https://example.com/arch/
   ```
 
 3. Update sources and install software
