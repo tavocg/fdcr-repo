@@ -64,7 +64,9 @@ build_deb_packages() {
   for pkg_dir in "$SOURCE"/*; do
     [ -d "$pkg_dir" ] || continue
     found_package=true
+
     build_deb_package "$pkg_dir" || return "$?"
+
     arch="${pkg_dir##*/}"
     arch="${arch##*_}"
     arches="$(append_once "$arches" "$arch")"
