@@ -47,7 +47,23 @@
               src = sourceRoot + "/${packageDir}";
               dontBuild = true;
               nativeBuildInputs = [ pkgs.autoPatchelfHook ];
-              buildInputs = with pkgs; [ stdenv.cc.cc.lib libxml2 zlib pcsc-lite ];
+              buildInputs = with pkgs; [
+                stdenv.cc.cc.lib
+                bzip2
+                brotli
+                expat
+                fontconfig
+                freetype
+                glib
+                gtk3
+                libappindicator-gtk3
+                libnotify
+                libpng
+                libxml2
+                pcsclite
+                webkitgtk_4_1
+                zlib
+              ];
 
               installPhase = ''
                 runHook preInstall
