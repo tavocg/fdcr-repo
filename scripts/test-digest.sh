@@ -164,17 +164,25 @@ verify_file_digests() {
   directory="$2"
   trusted="$3"
 
-  printf '%s\n' "$files" | while IFS= read -r file; do
-    [ -n "$file" ] || continue
-    digest=$(sha256sum "$directory/$file")
-    digest=${digest%% *}
-    if contains_digest "$digest" "$trusted"; then
-      printf 'SHA-256 OK %s (%s)\n' "$file" "$digest"
-    else
-      printf 'SHA-256 missing from source: %s (%s)\n' "$file" "$digest" >&2
-      return 1
-    fi
-  done
+  printf '%s\n' "$files" | {
+    failed=
+    while IFS= read -r file; do
+      [ -n "$file" ] || continue
+      digest=$(sha256sum "$directory/$file") || {
+        printf 'Could not calculate SHA-256: %s/%s\n' "$directory" "$file" >&2
+        failed=1
+        continue
+      }
+      digest=${digest%% *}
+      if contains_digest "$digest" "$trusted"; then
+        printf 'SHA-256 OK %s/%s (%s)\n' "$directory" "$file" "$digest"
+      else
+        printf 'SHA-256 missing from source: %s/%s (%s)\n' "$directory" "$file" "$digest" >&2
+        failed=1
+      fi
+    done
+    [ -z "$failed" ]
+  }
 }
 
 # Verify every .md5 checksum file found beneath SOURCE; stop on the first failure.
@@ -222,8 +230,8 @@ verify_package() {
   done
 
   if [ -z "$archive" ]; then
-    printf 'No source archive found for %s\n' "$package_dir" >&2
-    return 1
+    # Temporary source extractions and other directories are not package targets.
+    return 0
   fi
 
   temp_dir=$(mktemp -d "${TMPDIR:-/tmp}/test-digest.XXXXXX")
@@ -250,9 +258,15 @@ main() {
   verify_md5_files
 
   # Then check each package directory directly beneath a package manager directory.
-  find "$SOURCE" -mindepth 2 -maxdepth 2 -type d -print | while IFS= read -r package_dir; do
-    verify_package "$package_dir"
-  done
+  find "$SOURCE" -mindepth 2 -maxdepth 2 -type d -print | {
+    failed=
+    while IFS= read -r package_dir; do
+      if ! verify_package "$package_dir"; then
+        failed=1
+      fi
+    done
+    [ -z "$failed" ]
+  }
 }
 
 main "$@"
