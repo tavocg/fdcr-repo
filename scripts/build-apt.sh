@@ -1,141 +1,132 @@
 #!/bin/sh
-set -eu
+set -u
 
-ORIGIN="Soporte Firma Digital"
-LABEL="Repositorio APT de Soporte Firma Digital"
-SUITE="stable"
-CODENAME="stable"
-COMPONENT="main"
-DESCRIPTION="Repositorio oficial de paquetes de Soporte Firma Digital"
+: "${ORIGIN:=Soporte Firma Digital}"
+: "${LABEL:=Repositorio APT de Soporte Firma Digital}"
+: "${SUITE:=stable}"
+: "${CODENAME:=stable}"
+: "${COMPONENT:=main}"
+: "${DESCRIPTION:=Repositorio oficial de paquetes de Soporte Firma Digital}"
+: "${SOURCE:=./src/apt}"
+: "${PUBLIC:=./public/apt}"
 
 # Optional.
 # Example:
 #   GPG_KEY_ID="ABCDEF1234567890" ./build-apt.sh
-GPG_KEY_ID="${GPG_KEY_ID:-}"
+: "${GPG_KEY_ID:=}"
 
-SOURCE="./src/apt"
-PUBLIC="./public/apt"
-
-POOL="$PUBLIC/pool/$COMPONENT"
-DIST="$PUBLIC/dists/$CODENAME"
-DIST_MAIN="$DIST/$COMPONENT"
+POOL="$PUBLIC/pool/$COMPONENT"            # ./public/apt/pool/main
+DIST="$PUBLIC/dists/$CODENAME/$COMPONENT" # ./public/apt/dists/stable/main
 
 mkdir -p "$POOL"
-mkdir -p "$DIST_MAIN"
+mkdir -p "$DIST"
 
-# --------------------------------------------------
-# 1. Build .deb packages
-# --------------------------------------------------
+# build_deb_package() builds a deb package given it's directory path with format:
+# build_deb_package "/path/to/firmador_1.0.0_amd64"
+# -> Creates `$POOL/firmador_1.0.0_amd64.deb`
+build_deb_package() {
+	pkg_dir="$1"
 
-for pkg in "$SOURCE"/*; do
-  if [ ! -d "$pkg" ]; then
-    continue
-  fi
+	if ! [ -d "$pkg_dir" ]; then
+		return 1
+	fi
 
-  # Expected directory name:
-  #
-  # package_version_arch
-  #
-  # Example:
-  # firmador_1.0.0_amd64
-  #
-  arch="${pkg##*_}"
+	dpkg-deb --root-owner-group --build "$pkg_dir" "$POOL" >&2
+}
 
-  arch_dir="$DIST_MAIN/binary-$arch"
+append_once() {
+	arr="$1"
+	val="$2"
 
-  mkdir -p "$arch_dir"
+	case " $arr " in
+	*" $val "*) ;;
+	*)
+		if [ -z "$arr" ]; then
+			arr="$val"
+		else
+			arr="$arr $val"
+		fi
+		;;
+	esac
 
-  dpkg-deb \
-    --root-owner-group \
-    --build "$pkg" \
-    "$POOL"
-done
+	printf '%s\n' "$arr"
+}
 
-# --------------------------------------------------
-# 2. Generate Packages / Packages.gz
-# --------------------------------------------------
+# build_deb_packages() builds al deb packages from sources in `$SOURCE`
+build_deb_packages() {
+	arches=""
+	for pkg_dir in "$SOURCE"/*; do
+		build_deb_package "$pkg_dir" || return "$?"
+		arch="${pkg_dir##*_}"
+		arches="$(append_once "$arches" "$arch")"
+	done
+	printf '%s' "$arches"
+}
 
-architectures=""
+gen_arch_index() {
+	arch="$1"
 
-for arch_dir in "$DIST_MAIN"/binary-*; do
-  if [ ! -d "$arch_dir" ]; then
-    continue
-  fi
+	dist_abs="$DIST/binary-$arch" # ./public/apt/dists/stable/main/binary-amd64
+	mkdir -p "$dist_abs"
 
-  arch="${arch_dir##*-}"
+	pool="${POOL#"$PUBLIC"}"     # pool/main
+	dist="${dist_abs#"$PUBLIC"}" # dists/stable/main/binary-amd64
+	dist_index="$dist/Packages"  # dists/stable/main/binary-amd64/Packages
 
-  (
-    cd "$PUBLIC"
+	(
+		set -e
+		cd "$PUBLIC"
+		dpkg-scanpackages --arch "$arch" "$pool" >"$dist_index"
+		gzip -9 -c "$dist_index" >"$dist_index.gz"
+	)
+}
 
-    dpkg-scanpackages \
-      --arch "$arch" \
-      "pool/$COMPONENT" \
-      >"dists/$CODENAME/$COMPONENT/binary-$arch/Packages"
+gen_arch_indexes() {
+	for arch in "$@"; do
+		gen_arch_index "$arch"
+	done
+}
 
-    gzip \
-      -9 \
-      -c "dists/$CODENAME/$COMPONENT/binary-$arch/Packages" \
-      >"dists/$CODENAME/$COMPONENT/binary-$arch/Packages.gz"
-  )
+gen_release() {
+	arches="$1"
 
-  if [ -z "$architectures" ]; then
-    architectures="$arch"
-  else
-    architectures="$architectures $arch"
-  fi
-done
+	apt-ftparchive \
+		-o "APT::FTPArchive::Release::Origin=$ORIGIN" \
+		-o "APT::FTPArchive::Release::Label=$LABEL" \
+		-o "APT::FTPArchive::Release::Suite=$SUITE" \
+		-o "APT::FTPArchive::Release::Codename=$CODENAME" \
+		-o "APT::FTPArchive::Release::Architectures=$arches" \
+		-o "APT::FTPArchive::Release::Components=$COMPONENT" \
+		-o "APT::FTPArchive::Release::Description=$DESCRIPTION" \
+		release "$DIST" \
+		>"$DIST/Release"
+}
 
-if [ -z "$architectures" ]; then
-  echo "Error: no package architectures were found." >&2
-  exit 1
-fi
+sign_release() {
+	if [ -z "$GPG_KEY_ID" ]; then
+		return 1
+	fi
 
-# --------------------------------------------------
-# 3. Generate Release
-# --------------------------------------------------
+	dist="${DIST%"$COMPONENT"}"
+	rm -f "$dist/InRelease" "$dist/Release.gpg"
 
-apt-ftparchive \
-  -o "APT::FTPArchive::Release::Origin=$ORIGIN" \
-  -o "APT::FTPArchive::Release::Label=$LABEL" \
-  -o "APT::FTPArchive::Release::Suite=$SUITE" \
-  -o "APT::FTPArchive::Release::Codename=$CODENAME" \
-  -o "APT::FTPArchive::Release::Architectures=$architectures" \
-  -o "APT::FTPArchive::Release::Components=$COMPONENT" \
-  -o "APT::FTPArchive::Release::Description=$DESCRIPTION" \
-  release "$DIST" \
-  >"$DIST/Release"
+	# Clearsigned Release file.
+	# Modern APT clients normally prefer InRelease.
+	gpg \
+		--batch \
+		--yes \
+		--local-user "$GPG_KEY_ID" \
+		--clearsign \
+		--output "$dist/InRelease" \
+		"$dist/Release"
 
-# --------------------------------------------------
-# 4. Sign repository
-# --------------------------------------------------
-
-rm -f \
-  "$DIST/InRelease" \
-  "$DIST/Release.gpg"
-
-if [ -n "$GPG_KEY_ID" ]; then
-  echo "Signing repository with GPG key: $GPG_KEY_ID"
-
-  # Clearsigned Release file.
-  # Modern APT clients normally prefer InRelease.
-  gpg \
-    --batch \
-    --yes \
-    --local-user "$GPG_KEY_ID" \
-    --clearsign \
-    --output "$DIST/InRelease" \
-    "$DIST/Release"
-
-  # Detached signature for compatibility.
-  gpg \
-    --batch \
-    --yes \
-    --local-user "$GPG_KEY_ID" \
-    --armor \
-    --detach-sign \
-    --output "$DIST/Release.gpg" \
-    "$DIST/Release"
-else
-  echo "Warning: GPG_KEY_ID is not set."
-  echo "Repository generated without a signature."
-fi
+	# Detached signature for compatibility.
+	gpg \
+		--batch \
+		--yes \
+		--local-user "$GPG_KEY_ID" \
+		--armor \
+		--detach-sign \
+		--output "$dist/Release.gpg" \
+		"$dist/Release"
+}
