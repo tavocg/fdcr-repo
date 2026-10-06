@@ -2,8 +2,8 @@
 # External programs required: dpkg-deb, dpkg-scanpackages, gzip, apt-ftparchive.
 # Optional: gpg, required only when GPG_KEY_ID is set.
 
-if [ -r .env ]; then
-  . .env
+if [ -f .env ]; then
+  . ./.env
 fi
 
 set -eu

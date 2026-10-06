@@ -3,7 +3,7 @@
 # Optional: gpg, required only when GPG_KEY_ID is set.
 
 if [ -r .env ]; then
-  . .env
+  . ./.env
 fi
 
 set -eu
