@@ -16,13 +16,13 @@ run_makepkg() {
     set -- --config "$MAKEPKG_CONF" "$@"
   fi
   if [ -n "$GPG_KEY_ID" ]; then
-    makepkg "$@" --sign --key "$GPG_KEY_ID"
+    makepkg "$@" "PKGDEST=$PUBLIC" --sign --key "$GPG_KEY_ID"
   else
-    makepkg "$@"
+    makepkg "$@" "PKGDEST=$PUBLIC"
   fi
 }
 
-# Build one PKGBUILD and copy its package files into $PUBLIC.
+# Build one PKGBUILD directly into $PUBLIC.
 # Argument: path to a PKGBUILD file.
 build_pacman_package() (
   pkgbuild="$1"
@@ -31,29 +31,6 @@ build_pacman_package() (
 
   cd "$pkg_dir"
   run_makepkg --clean --force
-
-  found_package=false
-  for package_file in "$pkg_dir"/*.pkg.tar.*; do
-    [ -f "$package_file" ] || continue
-    case "$package_file" in
-      *.sig) continue ;;
-    esac
-
-    cp "$package_file" "$PUBLIC/"
-
-    if [ -n "$GPG_KEY_ID" ]; then
-      cp "$package_file.sig" "$PUBLIC/"
-    else
-      rm -f "$PUBLIC/${package_file##*/}.sig"
-    fi
-
-    found_package=true
-  done
-
-  if [ "$found_package" = false ]; then
-    printf 'makepkg produced no Pacman packages for %s\n' "$pkgbuild" >&2
-    return 1
-  fi
 )
 
 # Build every versioned package recipe below $SOURCE.
@@ -102,6 +79,12 @@ gen_pacman_repository() {
 main() {
   mkdir -p "$PUBLIC"
   PUBLIC=$(CDPATH= cd "$PUBLIC" && pwd)
+  if [ -z "$GPG_KEY_ID" ]; then
+    for signature_file in "$PUBLIC"/*.pkg.tar.*.sig; do
+      [ -f "$signature_file" ] || continue
+      rm -f "$signature_file"
+    done
+  fi
   build_pacman_packages
   gen_pacman_repository
 }
