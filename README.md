@@ -1,4 +1,4 @@
-# fdcr-repo - Repositorio de dependencias para Firma Digital en Costa Rica
+# fdcr-repo
 
 ## Building repositories
 
