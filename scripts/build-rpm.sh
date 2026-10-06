@@ -72,13 +72,11 @@ build_rpm_packages() {
 gen_rpm_repository() {
   createrepo_c --update "$PUBLIC"
 
-  if [ -z "$GPG_KEY_ID" ]; then
-    return 1
+  if [ -n "$GPG_KEY_ID" ]; then
+    gpg --batch --yes --local-user "$GPG_KEY_ID" --armor --detach-sign \
+      --output "$PUBLIC/repodata/repomd.xml.asc" \
+      "$PUBLIC/repodata/repomd.xml"
   fi
-
-  gpg --batch --yes --local-user "$GPG_KEY_ID" --armor --detach-sign \
-    --output "$PUBLIC/repodata/repomd.xml.asc" \
-    "$PUBLIC/repodata/repomd.xml"
 }
 
 # Build all RPMs from $SOURCE and update the repository in $PUBLIC.

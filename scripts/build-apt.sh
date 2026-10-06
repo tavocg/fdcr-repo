@@ -120,6 +120,10 @@ gen_release() {
     -o "APT::FTPArchive::Release::Description=$DESCRIPTION" \
     release "$DIST" \
     >"$DIST/Release"
+
+  if [ -n "$GPG_KEY_ID" ]; then
+    sign_release
+  fi
 }
 
 # Sign $DIST/Release as InRelease and Release.gpg using $GPG_KEY_ID.
@@ -162,10 +166,6 @@ main() {
   set -- $arches
   gen_arch_indexes "$@"
   gen_release "$@"
-
-  if [ -n "$GPG_KEY_ID" ]; then
-    sign_release
-  fi
 }
 
 main "$@"
