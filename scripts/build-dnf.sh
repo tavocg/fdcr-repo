@@ -2,6 +2,10 @@
 # External programs required: rpmbuild, createrepo_c, tar, cp, and mktemp.
 # Optional: gpg, required only when GPG_KEY_ID is set.
 
+if [ -r .env ]; then
+  . .env
+fi
+
 set -eu
 
 : "${SOURCE:=./src/dnf}"
