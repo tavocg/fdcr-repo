@@ -10,9 +10,8 @@ set -eu
 
 : "${ORIGIN:=Soporte Firma Digital}"
 : "${LABEL:=Repositorio APT de Soporte Firma Digital}"
-: "${SUITE:=stable}"
-: "${CODENAME:=noble}"
-: "${COMPONENT:=main}"
+: "${TARGET_RELEASE:=noble}"
+: "${REPO_COMPONENT:=main}"
 : "${DESCRIPTION:=Repositorio oficial de paquetes de Soporte Firma Digital}"
 : "${SOURCE:=./src/ubuntu-noble}"
 : "${PUBLIC:=./public/apt}"
@@ -22,9 +21,9 @@ set -eu
 #   GPG_KEY_ID="ABCDEF1234567890" ./build-apt.sh
 : "${GPG_KEY_ID:=}"
 
-POOL="$PUBLIC/pool/$COMPONENT"    # ./public/apt/pool/main
-RELEASE="$PUBLIC/dists/$CODENAME" # ./public/apt/dists/stable
-DIST="$RELEASE/$COMPONENT"        # ./public/apt/dists/stable/main
+POOL="$PUBLIC/pool/$REPO_COMPONENT"         # ./public/apt/pool/main
+RELEASE_DIR="$PUBLIC/dists/$TARGET_RELEASE" # ./public/apt/dists/noble
+DIST="$RELEASE_DIR/$REPO_COMPONENT"         # ./public/apt/dists/noble/main
 
 # Build one Debian package from a directory containing its package tree.
 # Argument: package directory (for example, /path/to/firmador_1.0.0_amd64).
@@ -90,10 +89,10 @@ build_deb_packages() {
 gen_arch_index() {
   arch="$1"
 
-  dist_abs="$DIST/binary-$arch" # ./public/apt/dists/stable/main/binary-amd64
+  dist_abs="$DIST/binary-$arch" # ./public/apt/dists/noble/main/binary-amd64
   mkdir -p "$dist_abs"
 
-  pool="pool/$COMPONENT"
+  pool="pool/$REPO_COMPONENT"
   dist_index="${DIST#"$PUBLIC"/}/binary-$arch/Packages"
 
   (
@@ -113,20 +112,20 @@ gen_arch_indexes() {
 }
 
 # Write the repository Release metadata using the supplied architectures.
-# Arguments: one or more architecture names. Writes $RELEASE/Release.
+# Arguments: one or more architecture names. Writes $RELEASE_DIR/Release.
 gen_release() {
   arches="$*"
 
   apt-ftparchive \
     -o "APT::FTPArchive::Release::Origin=$ORIGIN" \
     -o "APT::FTPArchive::Release::Label=$LABEL" \
-    -o "APT::FTPArchive::Release::Suite=$SUITE" \
-    -o "APT::FTPArchive::Release::Codename=$CODENAME" \
+    -o "APT::FTPArchive::Release::Suite=$TARGET_RELEASE" \
+    -o "APT::FTPArchive::Release::Codename=$TARGET_RELEASE" \
     -o "APT::FTPArchive::Release::Architectures=$arches" \
-    -o "APT::FTPArchive::Release::Components=$COMPONENT" \
+    -o "APT::FTPArchive::Release::Components=$REPO_COMPONENT" \
     -o "APT::FTPArchive::Release::Description=$DESCRIPTION" \
-    release "$RELEASE" \
-    >"$RELEASE/Release"
+    release "$RELEASE_DIR" \
+    >"$RELEASE_DIR/Release"
 
   if [ -n "$GPG_KEY_ID" ]; then
     sign_release
@@ -140,7 +139,7 @@ sign_release() {
     return 1
   fi
 
-  dist="$RELEASE"
+  dist="$RELEASE_DIR"
   rm -f "$dist/InRelease" "$dist/Release.gpg"
 
   # Clearsigned Release file.

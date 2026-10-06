@@ -2,11 +2,11 @@ all: ubuntu-noble ubuntu-jammy centos-stream arch
 
 .PHONY: ubuntu-noble
 ubuntu-noble: scripts/build-apt.sh
-	@SOURCE=./src/ubuntu-noble CODENAME=noble SUITE=noble ./scripts/build-apt.sh
+	@SOURCE=./src/ubuntu-noble TARGET_RELEASE=noble ./scripts/build-apt.sh
 
 .PHONY: ubuntu-jammy
 ubuntu-jammy: scripts/build-apt.sh
-	@SOURCE=./src/ubuntu-jammy CODENAME=jammy SUITE=jammy ./scripts/build-apt.sh
+	@SOURCE=./src/ubuntu-jammy TARGET_RELEASE=jammy ./scripts/build-apt.sh
 
 .PHONY: centos-stream
 centos-stream: scripts/build-dnf.sh
