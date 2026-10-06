@@ -8,10 +8,15 @@ Build all repositories with the signing key available in your GPG keyring:
 
 ```sh
 GPG_KEY_ID="YOUR_SIGNING_KEY_ID"
-GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-ubuntu.sh
-GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-centos-stream.sh
-GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-arch.sh
+GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-apt.sh
+GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-dnf.sh
+GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-pacman.sh
 ```
+
+The `ubuntu-noble` and `ubuntu-jammy` Make targets call the same APT
+builder with release-specific source trees and repository metadata. Additional
+Ubuntu releases can use that builder with their own source directory, suite,
+and codename.
 
 The scripts create `public/apt/`, `public/dnf/`, and `public/pacman/`.
 
@@ -21,6 +26,7 @@ by package format:
 | Source directory | Target |
 | --- | --- |
 | `src/ubuntu-noble/` | Ubuntu 24.04 LTS (Noble Numbat), built as APT packages |
+| `src/ubuntu-jammy/` | Ubuntu 22.04 LTS (Jammy Jellyfish), built as APT packages |
 | `src/centos-stream-9/` | CentOS Stream 9, built as RPM packages |
 | `src/arch/` | Arch Linux rolling release, built as Pacman packages |
 

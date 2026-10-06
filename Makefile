@@ -1,15 +1,19 @@
-all: ubuntu centos-stream arch
+all: ubuntu-noble ubuntu-jammy centos-stream arch
 
-.PHONY: ubuntu
-ubuntu: scripts/build-ubuntu.sh
-	@./$<
+.PHONY: ubuntu-noble
+ubuntu-noble: scripts/build-apt.sh
+	@SOURCE=./src/ubuntu-noble CODENAME=noble SUITE=noble ./scripts/build-apt.sh
+
+.PHONY: ubuntu-jammy
+ubuntu-jammy: scripts/build-apt.sh
+	@SOURCE=./src/ubuntu-jammy CODENAME=jammy SUITE=jammy ./scripts/build-apt.sh
 
 .PHONY: centos-stream
-centos-stream: scripts/build-centos-stream.sh
+centos-stream: scripts/build-dnf.sh
 	@./$<
 
 .PHONY: arch
-arch: scripts/build-arch.sh
+arch: scripts/build-pacman.sh
 	@./$<
 
 .PHONY: test

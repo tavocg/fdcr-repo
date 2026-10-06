@@ -19,7 +19,7 @@ set -eu
 
 # Optional.
 # Example:
-#   GPG_KEY_ID="ABCDEF1234567890" ./build-ubuntu.sh
+#   GPG_KEY_ID="ABCDEF1234567890" ./build-apt.sh
 : "${GPG_KEY_ID:=}"
 
 POOL="$PUBLIC/pool/$COMPONENT"    # ./public/apt/pool/main
