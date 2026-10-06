@@ -5,5 +5,3 @@ public/
 # podrá opcionalmente descargar los archivos y sus digests proporcionados por
 # Soporte Firma Digital y comprobarlos automáticamente.
 /src/**/*.zip
-/src/**/*.md5
-/src/**/*.exclude
