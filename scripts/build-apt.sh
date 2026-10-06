@@ -1,6 +1,9 @@
 #!/bin/sh
 set -eu
 
+# External programs required: dpkg-deb, dpkg-scanpackages, gzip, apt-ftparchive.
+# Optional: gpg, required only when GPG_KEY_ID is set.
+
 : "${ORIGIN:=Soporte Firma Digital}"
 : "${LABEL:=Repositorio APT de Soporte Firma Digital}"
 : "${SUITE:=stable}"
