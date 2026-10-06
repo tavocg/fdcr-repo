@@ -1,15 +1,15 @@
-all: apt dnf pacman
+all: ubuntu centos-stream arch
 
-.PHONY: apt
-apt: scripts/build-apt.sh
+.PHONY: ubuntu
+ubuntu: scripts/build-ubuntu.sh
 	@./$<
 
-.PHONY: dnf
-dnf: scripts/build-dnf.sh
+.PHONY: centos-stream
+centos-stream: scripts/build-centos-stream.sh
 	@./$<
 
-.PHONY: pacman
-pacman: scripts/build-pacman.sh
+.PHONY: arch
+arch: scripts/build-arch.sh
 	@./$<
 
 .PHONY: test

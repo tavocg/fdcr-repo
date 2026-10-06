@@ -11,15 +11,15 @@ set -eu
 : "${ORIGIN:=Soporte Firma Digital}"
 : "${LABEL:=Repositorio APT de Soporte Firma Digital}"
 : "${SUITE:=stable}"
-: "${CODENAME:=stable}"
+: "${CODENAME:=noble}"
 : "${COMPONENT:=main}"
 : "${DESCRIPTION:=Repositorio oficial de paquetes de Soporte Firma Digital}"
-: "${SOURCE:=./src/apt}"
+: "${SOURCE:=./src/ubuntu-noble}"
 : "${PUBLIC:=./public/apt}"
 
 # Optional.
 # Example:
-#   GPG_KEY_ID="ABCDEF1234567890" ./build-apt.sh
+#   GPG_KEY_ID="ABCDEF1234567890" ./build-ubuntu.sh
 : "${GPG_KEY_ID:=}"
 
 POOL="$PUBLIC/pool/$COMPONENT"    # ./public/apt/pool/main

@@ -8,12 +8,24 @@ Build all repositories with the signing key available in your GPG keyring:
 
 ```sh
 GPG_KEY_ID="YOUR_SIGNING_KEY_ID"
-GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-apt.sh
-GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-dnf.sh
-GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-pacman.sh
+GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-ubuntu.sh
+GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-centos-stream.sh
+GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-arch.sh
 ```
 
 The scripts create `public/apt/`, `public/dnf/`, and `public/pacman/`.
+
+Source packages are organized by target distribution and release, rather than
+by package format:
+
+| Source directory | Target |
+| --- | --- |
+| `src/ubuntu-noble/` | Ubuntu 24.04 LTS (Noble Numbat), built as APT packages |
+| `src/centos-stream-9/` | CentOS Stream 9, built as RPM packages |
+| `src/arch/` | Arch Linux rolling release, built as Pacman packages |
+
+This allows distribution-specific package variants to coexist, such as a
+separate `src/artix/` tree if an Arch package does not work on Artix.
 
 ```sh
 gpg --armor --export "$GPG_KEY_ID" > public/fdcr.asc
@@ -32,7 +44,7 @@ If `public/` is published at `https://example.com/`.
 
 2. Install repo
   ```sh
-  echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/fdcr.asc] https://example.com/apt stable main' | sudo tee /etc/apt/sources.list.d/fdcr.list
+  echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/fdcr.asc] https://example.com/apt noble main' | sudo tee /etc/apt/sources.list.d/fdcr.list
   ```
 
 3. Update sources

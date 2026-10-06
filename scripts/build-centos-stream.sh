@@ -8,7 +8,7 @@ fi
 
 set -eu
 
-: "${SOURCE:=./src/dnf}"
+: "${SOURCE:=./src/centos-stream-9}"
 : "${PUBLIC:=./public/dnf}"
 : "${GPG_KEY_ID:=}"
 
@@ -34,7 +34,7 @@ build_rpm_package() {
     return 1
   fi
 
-  topdir="$(mktemp -d "${TMPDIR:-/tmp}/build-dnf.XXXXXX")"
+  topdir="$(mktemp -d "${TMPDIR:-/tmp}/build-centos-stream.XXXXXX")"
   mkdir -p "$topdir/BUILD" "$topdir/BUILDROOT" "$topdir/RPMS" "$topdir/SOURCES" "$topdir/SPECS" "$topdir/SRPMS"
   tar -C "$pkg_dir/rootfs" -czf "$topdir/SOURCES/payload.tar.gz" .
 

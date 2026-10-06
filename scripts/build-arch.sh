@@ -8,7 +8,7 @@ fi
 
 set -eu
 
-: "${SOURCE:=./src/pacman}"
+: "${SOURCE:=./src/arch}"
 : "${PUBLIC:=./public/pacman}"
 : "${GPG_KEY_ID:=}"
 : "${MAKEPKG_CONF:=}"
