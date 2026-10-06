@@ -1,5 +1,5 @@
 #!/bin/sh
-# External programs required: rpmbuild, createrepo_c, tar, cp, and mktemp.
+# External programs required: rpm, rpmbuild, createrepo_c, tar, cp, and mktemp.
 # Optional: gpg, required only when GPG_KEY_ID is set.
 
 if [ -r .env ]; then
@@ -14,7 +14,7 @@ set -eu
 
 # Build one RPM from a source package directory containing a .spec and rootfs/.
 # Argument: package source directory. Copies built RPMs into $PUBLIC.
-build_rpm_package() {
+build_rpm_package() (
   pkg_dir="$1"
   spec_file=""
 
@@ -35,10 +35,16 @@ build_rpm_package() {
   fi
 
   topdir="$(mktemp -d "${TMPDIR:-/tmp}/build-dnf.XXXXXX")"
-  mkdir -p "$topdir/BUILD" "$topdir/BUILDROOT" "$topdir/RPMS" "$topdir/SOURCES" "$topdir/SPECS" "$topdir/SRPMS"
+  trap 'rm -rf "$topdir"' EXIT HUP INT TERM
+  mkdir -p "$topdir/BUILD" "$topdir/BUILDROOT" "$topdir/RPMS" "$topdir/SOURCES" "$topdir/SPECS" "$topdir/SRPMS" "$topdir/rpmdb" "$topdir/tmp"
   tar -C "$pkg_dir/rootfs" -czf "$topdir/SOURCES/payload.tar.gz" .
 
-  rpmbuild --define "_topdir $topdir" -bb "$spec_file"
+  rpm --dbpath "$topdir/rpmdb" --initdb
+  rpmbuild \
+    --define "_topdir $topdir" \
+    --define "_dbpath $topdir/rpmdb" \
+    --define "_tmppath $topdir/tmp" \
+    -bb "$spec_file"
 
   found_rpm=false
   for rpm_file in "$topdir"/RPMS/*/*.rpm; do
@@ -47,13 +53,11 @@ build_rpm_package() {
     found_rpm=true
   done
 
-  rm -rf "$topdir"
-
   if [ "$found_rpm" = false ]; then
     printf 'rpmbuild produced no RPM for %s\n' "$pkg_dir" >&2
     return 1
   fi
-}
+)
 
 # Build every RPM source package under $SOURCE.
 # Returns nonzero if a build fails or no source packages are present.

@@ -31,11 +31,15 @@ tar -xzf %{SOURCE0} -C %{buildroot}
 %files
 %config(noreplace) /etc/idoss.conf
 %config(noreplace) /etc/idoss.lic
+/etc/init.d/idocachesrv
+/etc/xdg/autostart/SmartCardMiddleware.desktop
 /usr/lib/SCMiddleware
 /usr/share/SCMiddleware
+/usr/share/applications/SmartCardMiddleware.desktop
 /usr/share/applications/pkcs7.desktop
 /usr/share/mime/packages/pkcs7-mime.xml
 /usr/share/nautilus-python/extensions/CryptoshellExtension.py
+%exclude /usr/lib/.build-id/*/*
 
 %changelog
 * Mon Oct 05 2026 Soporte Firma Digital - 6.23.50.5-1
