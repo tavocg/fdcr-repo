@@ -1,0 +1,5 @@
+# Ignoramos los archivos a comprobar, la persona que construya el repositorio
+# podrá opcionalmente descargar los archivos y sus digests proporcionados por
+# Soporte Firma Digital y comprobarlos automáticamente.
+/*.zip
+/*.md5
