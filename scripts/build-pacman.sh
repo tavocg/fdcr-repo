@@ -27,13 +27,17 @@ run_makepkg() {
 build_pacman_package() (
   pkgbuild="$1"
   pkg_dir="${pkgbuild%/*}"
+  pkg_dir=$(CDPATH= cd "$pkg_dir" && pwd)
 
   cd "$pkg_dir"
   run_makepkg --clean --force
 
   found_package=false
-  for package_file in "$pkg_dir"/*.pkg.tar.zst; do
+  for package_file in "$pkg_dir"/*.pkg.tar.*; do
     [ -f "$package_file" ] || continue
+    case "$package_file" in
+      *.sig) continue ;;
+    esac
 
     cp "$package_file" "$PUBLIC/"
 
@@ -71,9 +75,16 @@ build_pacman_packages() (
 
 # Create and sign the repository database from all built packages.
 gen_pacman_repository() {
-  set -- "$PUBLIC"/*.pkg.tar.zst
+  set --
+  for package_file in "$PUBLIC"/*.pkg.tar.*; do
+    [ -f "$package_file" ] || continue
+    case "$package_file" in
+      *.sig) continue ;;
+    esac
+    set -- "$@" "$package_file"
+  done
 
-  if [ ! -f "$1" ]; then
+  if [ "$#" -eq 0 ]; then
     printf 'No Pacman packages found in %s\n' "$PUBLIC" >&2
     return 1
   fi
@@ -90,6 +101,7 @@ gen_pacman_repository() {
 # repository metadata when GPG_KEY_ID is set. Arguments are ignored.
 main() {
   mkdir -p "$PUBLIC"
+  PUBLIC=$(CDPATH= cd "$PUBLIC" && pwd)
   build_pacman_packages
   gen_pacman_repository
 }
