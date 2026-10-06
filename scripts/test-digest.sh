@@ -175,9 +175,12 @@ verify_package() {
   rm -rf "$temp_dir"
 }
 
-verify_md5_files
-found_package=
-find "$SOURCE" -mindepth 2 -maxdepth 2 -type d -print | while IFS= read -r package_dir; do
-  found_package=1
-  verify_package "$package_dir"
-done
+main() {
+  verify_md5_files
+
+  find "$SOURCE" -mindepth 2 -maxdepth 2 -type d -print | while IFS= read -r package_dir; do
+    verify_package "$package_dir"
+  done
+}
+
+main "$@"
