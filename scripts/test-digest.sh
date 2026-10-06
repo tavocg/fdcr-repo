@@ -206,12 +206,12 @@ verify_md5_files() {
 }
 
 # Compare a package directory's files against its adjacent source archive.
-# Argument: package directory. Uses a sibling .exclude file when present.
+# Argument: package directory. Uses its local .exclude file when present.
 verify_package() {
   package_dir="$1"
   package_name=${package_dir##*/}
   package_parent=${package_dir%/*}
-  exclude="$package_parent/$package_name.exclude"
+  exclude="$package_dir/.exclude"
   payload_dir="$package_dir"
   archive=
 
