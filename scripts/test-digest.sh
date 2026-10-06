@@ -4,8 +4,6 @@ set -eu
 
 : "${SOURCE:=./src}"
 
-# Print a whitespace-separated list with $2 appended only if it is not present.
-# Arguments: existing list and value to append. Output: updated list on stdout.
 append_once() {
   arr="$1"
   val="$2"
@@ -33,21 +31,20 @@ files() {
   fi
 
   exclude=
-  if [ -n "$exclude_file_path" ]; then
+  if [ -n "$exclude_file_path" ] && [ -f "$exclude_file_path" ]; then
     exclude=1
   fi
 
   base_dir=$(pwd)
+
   (
     cd "$dir_path"
 
     found_file=
-    find . | while IFS= read -r line; do
-      if [ -d "$line" ]; then
-        continue
-      fi
 
+    find . -type f | while IFS= read -r line; do
       ignored=
+
       if [ "$exclude" ]; then
         while IFS= read -r ignored_line; do
           if [ "$line" = "$ignored_line" ]; then
@@ -72,31 +69,19 @@ files() {
 }
 
 cmp_sum() {
-  # We must check that all sources exist on target.
-  source="$1" # 4da34... 90c41...
-  target="$2" # 4da34... 90c41... f3d7f...
+  source="$1"
+  target="$2"
 
-  set -- $target
-
-  for trusted; do
-    new_source=
-    removed=
-
-    for digest in $source; do
-      if [ -z "$removed" ] && [ "$digest" = "$trusted" ]; then
-        removed=1
-        continue
-      fi
-
-      new_source=$(append_once "$new_source" "$digest")
-    done
-
-    source="$new_source"
-
-    [ -z "$source" ] && return 0
+  for digest in $source; do
+    case " $target " in
+    *" $digest "*) ;;
+    *) return 1 ;;
+    esac
   done
 
-  return 1
+  return 0
 }
 
-files "src/apt/fdcr-middleware-idopte_6.23.50.5-1_amd64" "src/apt/fdcr-middleware-idopte_6.23.50.5-1_amd64.exclude"
+files \
+  "src/apt/fdcr-middleware-idopte_6.23.50.5-1_amd64" \
+  "src/apt/fdcr-middleware-idopte_6.23.50.5-1_amd64.exclude"
