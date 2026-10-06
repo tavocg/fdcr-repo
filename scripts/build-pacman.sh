@@ -11,6 +11,7 @@ set -eu
 
 # Run makepkg with the optional provided config and GPG signing.
 run_makepkg() {
+  set -- --nodeps "$@"
   if [ -n "$MAKEPKG_CONF" ]; then
     set -- --config "$MAKEPKG_CONF" "$@"
   fi
