@@ -18,8 +18,9 @@ set -eu
 #   GPG_KEY_ID="ABCDEF1234567890" ./build-apt.sh
 : "${GPG_KEY_ID:=}"
 
-POOL="$PUBLIC/pool/$COMPONENT"            # ./public/apt/pool/main
-DIST="$PUBLIC/dists/$CODENAME/$COMPONENT" # ./public/apt/dists/stable/main
+POOL="$PUBLIC/pool/$COMPONENT"    # ./public/apt/pool/main
+RELEASE="$PUBLIC/dists/$CODENAME" # ./public/apt/dists/stable
+DIST="$RELEASE/$COMPONENT"        # ./public/apt/dists/stable/main
 
 # Build one Debian package from a directory containing its package tree.
 # Argument: package directory (for example, /path/to/firmador_1.0.0_amd64).
@@ -108,7 +109,7 @@ gen_arch_indexes() {
 }
 
 # Write the repository Release metadata using the supplied architectures.
-# Arguments: one or more architecture names. Writes $DIST/Release.
+# Arguments: one or more architecture names. Writes $RELEASE/Release.
 gen_release() {
   arches="$*"
 
@@ -120,8 +121,8 @@ gen_release() {
     -o "APT::FTPArchive::Release::Architectures=$arches" \
     -o "APT::FTPArchive::Release::Components=$COMPONENT" \
     -o "APT::FTPArchive::Release::Description=$DESCRIPTION" \
-    release "$DIST" \
-    >"$DIST/Release"
+    release "$RELEASE" \
+    >"$RELEASE/Release"
 
   if [ -n "$GPG_KEY_ID" ]; then
     sign_release
@@ -135,7 +136,7 @@ sign_release() {
     return 1
   fi
 
-  dist="${DIST%"$COMPONENT"}"
+  dist="$RELEASE"
   rm -f "$dist/InRelease" "$dist/Release.gpg"
 
   # Clearsigned Release file.
