@@ -80,7 +80,8 @@ sha256sums() {
 
     sums=
     for file in $file_list; do
-      sum=$(sha256sum "$file" | awk '{print $1}')
+      sum=$(sha256sum "$file")
+      sum=${sum%% *}
       sums=$(append_once "$sums" "$sum")
     done
 
@@ -131,15 +132,20 @@ cmp_sum() {
 # Verify every .md5 checksum file found beneath SOURCE; stop on the first failure.
 verify_md5_files() {
   find "$SOURCE" -type f -name '*.md5' -print | while IFS= read -r md5_file; do
-    md5_dir=${md5_file%/*}
-    md5_name=${md5_file##*/}
-    (
-      cd "$md5_dir"
-      md5sum -c "$md5_name"
-    ) || {
+    target_file=${md5_file%.md5}
+    IFS=' ' read -r expected _ <"$md5_file"
+    actual=$(md5sum "$target_file") || {
       printf 'MD5 verification failed: %s\n' "$md5_file" >&2
       exit 1
     }
+    actual=${actual%% *}
+
+    if [ -z "$expected" ] || [ "$expected" != "$actual" ]; then
+      printf 'MD5 verification failed: %s\n' "$md5_file" >&2
+      exit 1
+    fi
+
+    printf 'MD5 OK %s\n' "$target_file"
   done
 }
 
