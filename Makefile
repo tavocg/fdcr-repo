@@ -1,11 +1,11 @@
-all: apt rpm pacman
+all: apt dnf pacman
 
 .PHONY: apt
 apt: scripts/build-apt.sh
 	@./$<
 
-.PHONY: rpm
-rpm: scripts/build-rpm.sh
+.PHONY: dnf
+dnf: scripts/build-dnf.sh
 	@./$<
 
 .PHONY: pacman

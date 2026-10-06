@@ -4,8 +4,8 @@
 
 set -eu
 
-: "${SOURCE:=./src/rpm}"
-: "${PUBLIC:=./public/rpm}"
+: "${SOURCE:=./src/dnf}"
+: "${PUBLIC:=./public/dnf}"
 : "${GPG_KEY_ID:=}"
 
 # Build one RPM from a source package directory containing a .spec and rootfs/.
@@ -30,7 +30,7 @@ build_rpm_package() {
     return 1
   fi
 
-  topdir="$(mktemp -d "${TMPDIR:-/tmp}/build-rpm.XXXXXX")"
+  topdir="$(mktemp -d "${TMPDIR:-/tmp}/build-dnf.XXXXXX")"
   mkdir -p "$topdir/BUILD" "$topdir/BUILDROOT" "$topdir/RPMS" "$topdir/SOURCES" "$topdir/SPECS" "$topdir/SRPMS"
   tar -C "$pkg_dir/rootfs" -czf "$topdir/SOURCES/payload.tar.gz" .
 

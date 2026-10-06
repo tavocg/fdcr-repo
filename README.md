@@ -7,11 +7,11 @@ Build all repositories with the signing key available in your GPG keyring:
 ```sh
 GPG_KEY_ID="YOUR_SIGNING_KEY_ID"
 GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-apt.sh
-GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-rpm.sh
+GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-dnf.sh
 GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-pacman.sh
 ```
 
-The scripts create `public/apt/`, `public/rpm/`, and `public/pacman/`.
+The scripts create `public/apt/`, `public/dnf/`, and `public/pacman/`.
 
 ```sh
 gpg --armor --export "$GPG_KEY_ID" > public/fdcr.asc
@@ -43,7 +43,7 @@ If `public/` is published at `https://example.com/`.
   sudo apt install fdcr-middleware-idopte
   ```
 
-### RPM clients (Fedora, RHEL, and compatible systems)
+### DNF clients (Fedora, RHEL, and compatible systems)
 
 1. Install key
   ```sh
@@ -56,7 +56,7 @@ If `public/` is published at `https://example.com/`.
   sudo tee /etc/yum.repos.d/fdcr.repo > /dev/null <<'INI'
   [fdcr]
   name=Soporte Firma Digital
-  baseurl=https://example.com/rpm/
+  baseurl=https://example.com/dnf/
   enabled=1
   gpgcheck=0
   repo_gpgcheck=1
