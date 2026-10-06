@@ -205,7 +205,7 @@ verify_md5_files() {
   done
 }
 
-# Compare a package directory's files against the matching source archive.
+# Compare a package directory's files against its adjacent source archive.
 # Argument: package directory. Uses a sibling .exclude file when present.
 verify_package() {
   package_dir="$1"
@@ -219,7 +219,7 @@ verify_package() {
     payload_dir="$package_dir/rootfs"
   fi
 
-  for candidate in "$SOURCE"/*/"$package_name".source.*; do
+  for candidate in "$package_parent/$package_name".source.*; do
     [ -f "$candidate" ] || continue
     case "$candidate" in *.md5) continue ;; esac
     if [ -n "$archive" ]; then
