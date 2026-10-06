@@ -31,6 +31,8 @@
               apt
               gnupg
               binutils
+              pacman
+              fakeroot
               git-lfs
             ];
 
