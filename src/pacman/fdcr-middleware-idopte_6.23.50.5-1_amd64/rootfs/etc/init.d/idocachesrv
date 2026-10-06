@@ -1,0 +1,66 @@
+#!/usr/bin/sh
+
+# Provides: idocachesrv
+# chkconfig: 2345 20 80
+# Short-Description: Daemon for caching smart card data
+# Description:       Caches smart card data for improved speed and consistency
+#                    when accessed from multiple processes.
+#                    Used by the PKCS#11 interface.
+DESC="Smart card global cache"
+NAME=idocachesrv
+DAEMON=/usr/lib/SCMiddleware/$NAME
+PIDFILE=/var/run/idoCacheSrv.pid
+SCRIPTNAME=/etc/init.d/$NAME
+
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || exit 0
+
+RETVAL=0
+# Source function library.
+#. /etc/init.d/functions
+
+start() {
+    echo -n "Starting $NAME : "
+    if [ -s ${PIDFILE} ]; then
+       RETVAL=1
+       echo "Already running !" && warning
+    else
+       ${DAEMON} >/dev/null 2>&1 &
+       RETVAL=$?
+       PID=$!
+       echo " $NAME Started "
+    fi
+}
+stop() {
+    if [ ! -s ${PIDFILE} ]; then
+	RETVAL=1
+	echo "Not running !" && warning
+    else
+	echo " Shutting down $NAME : "
+	kill -9 `cat ${PIDFILE}`
+	rm "${PIDFILE}"
+	RETVAL=$?
+    fi
+}
+restart(){
+	echo -n "Restarting $NAME : "
+	stop
+	start
+}
+case "$1" in
+    start)
+        start
+    ;;
+    stop)
+        stop
+    ;;
+    status)
+        status ${NAME}
+    ;;
+    restart)
+        restart
+    ;;
+    *)
+        echo "Usage: $0 {start|stop|status|restart}"
+    ;; esac
+exit 0
