@@ -25,7 +25,7 @@ append_once() {
 }
 
 # List regular files under a directory, omitting paths listed in an optional exclude file.
-# Arguments: directory and optional exclude-file path. Prints a whitespace-separated list.
+# Arguments: directory and optional exclude-file path. Prints one relative path per line.
 file_list() {
   dir_path="$1"
   exclude_file_path="$2"
@@ -43,7 +43,6 @@ file_list() {
   (
     cd "$dir_path"
 
-    found_file=
     find . -type f | while IFS= read -r line; do
       ignored=
       if [ "$exclude" ]; then
@@ -59,17 +58,12 @@ file_list() {
         continue
       fi
 
-      if [ "$found_file" ]; then
-        printf ' %s' "$line"
-      else
-        found_file=1
-        printf '%s' "$line"
-      fi
+      printf '%s\n' "$line"
     done
   )
 }
 
-# Calculate the unique SHA-256 digests for a whitespace-separated list of files.
+# Calculate SHA-256 digests for a newline-separated list of files.
 # Arguments: file list and directory in which those relative paths are located.
 sha256sums() {
   file_list="$1"
@@ -78,15 +72,28 @@ sha256sums() {
   (
     cd "$dir_path"
 
-    sums=
-    for file in $file_list; do
-      sum=$(sha256sum "$file")
+    printf '%s\n' "$file_list" | while IFS= read -r file; do
+      [ -n "$file" ] || continue
+      sum=$(sha256sum "$file") || exit 1
       sum=${sum%% *}
-      sums=$(append_once "$sums" "$sum")
+      printf '%s\n' "$sum"
     done
-
-    printf '%s\n' "$sums"
   )
+}
+
+# Check whether a digest appears as a complete line in a newline-separated list.
+# Arguments: digest to find and digest list.
+contains_digest() {
+  needle="$1"
+  digest_list="$2"
+
+  while IFS= read -r candidate; do
+    [ "$candidate" = "$needle" ] && return 0
+  done <<EOF
+$digest_list
+EOF
+
+  return 1
 }
 
 # Extract a supported archive into a destination directory.
@@ -116,20 +123,24 @@ extract_archive() {
   esac
 }
 
-# Check that every digest in the untrusted list exists in the trusted list.
-# Arguments: trusted digest list and untrusted digest list.
-cmp_sum() {
-  trusted="$1"
-  untrusted="$2"
+# Verify each package file's SHA-256 against the digests found in the extracted source.
+# Arguments: package file list, package directory, and extracted source digest list.
+verify_file_digests() {
+  files="$1"
+  directory="$2"
+  trusted="$3"
 
-  for digest in $untrusted; do
-    case " $trusted " in
-    *" $digest "*) ;;
-    *) return 1 ;;
-    esac
+  printf '%s\n' "$files" | while IFS= read -r file; do
+    [ -n "$file" ] || continue
+    digest=$(sha256sum "$directory/$file")
+    digest=${digest%% *}
+    if contains_digest "$digest" "$trusted"; then
+      printf 'SHA-256 OK %s (%s)\n' "$file" "$digest"
+    else
+      printf 'SHA-256 missing from source: %s (%s)\n' "$file" "$digest" >&2
+      return 1
+    fi
   done
-
-  return 0
 }
 
 # Verify every .md5 checksum file found beneath SOURCE; stop on the first failure.
@@ -152,16 +163,21 @@ verify_md5_files() {
   done
 }
 
-# Compare a package directory's file digests against its sibling source archive.
+# Compare a package directory's files against the matching source archive.
 # Argument: package directory. Uses a sibling .exclude file when present.
 verify_package() {
   package_dir="$1"
   package_name=${package_dir##*/}
   package_parent=${package_dir%/*}
   exclude="$package_parent/$package_name.exclude"
+  payload_dir="$package_dir"
   archive=
 
-  for candidate in "$package_parent/$package_name".source.*; do
+  if [ -d "$package_dir/rootfs" ]; then
+    payload_dir="$package_dir/rootfs"
+  fi
+
+  for candidate in "$SOURCE"/*/"$package_name".source.*; do
     [ -f "$candidate" ] || continue
     case "$candidate" in *.md5) continue ;; esac
     if [ -n "$archive" ]; then
@@ -182,12 +198,11 @@ verify_package() {
     return 1
   fi
 
-  package_files=$(file_list "$package_dir" "$exclude")
+  package_files=$(file_list "$payload_dir" "$exclude")
   source_files=$(file_list "$temp_dir" "")
-  package_sums=$(sha256sums "$package_files" "$package_dir")
   source_sums=$(sha256sums "$source_files" "$temp_dir")
 
-  if ! cmp_sum "$source_sums" "$package_sums"; then
+  if ! verify_file_digests "$package_files" "$payload_dir" "$source_sums"; then
     printf 'Package files do not match source archive: %s\n' "$package_dir" >&2
     rm -rf "$temp_dir"
     return 1
