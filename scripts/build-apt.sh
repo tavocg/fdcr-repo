@@ -10,10 +10,10 @@ set -eu
 
 : "${ORIGIN:=Soporte Firma Digital}"
 : "${LABEL:=Repositorio APT de Soporte Firma Digital}"
-: "${CODENAME:=noble}"
+: "${CODENAME:=stable}"
 : "${REPO_COMPONENT:=main}"
 : "${DESCRIPTION:=Repositorio oficial de paquetes de Soporte Firma Digital}"
-: "${SOURCE:=./src/ubuntu-noble}"
+: "${SOURCE:=./src/deb}"
 : "${PUBLIC:=./public/$CODENAME}"
 
 # Optional.
