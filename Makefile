@@ -1,39 +1,40 @@
-all: sign
+all: verify-checksums public
 
-.PHONY: sign
-sign:
+.PHONY: public
+public: public/fdcr.asc public/noble public/jammy public/fedora public/arch
+
+.PHONY: public/fdcr.asc
+public/fdcr.asc:
+	@mkdir -p "$(@D)"
 	@set -a; \
 	[ -f .env ] && . ./.env; \
 	set +a; \
-	if [ -z "$$GPG_KEY_ID" ]; then \
-		echo "Error: GPG_KEY_ID is not set"; \
-		exit 1; \
-	fi; \
-	$(MAKE) repos GPG_KEY_ID="$$GPG_KEY_ID"
+	if [ -n "$$GPG_KEY_ID" ]; then \
+		gpg --armor --export "$$GPG_KEY_ID" > "$@"; \
+	fi
 
-.PHONY: repos
-repos: ubuntu-noble ubuntu-jammy fedora arch
+.PHONY: public/noble
+public/noble: scripts/build-apt.sh
+	@GPG_KEY_ID="$$GPG_KEY_ID" SOURCE=./src/ubuntu-noble CODENAME=noble PUBLIC=./public/noble ./scripts/build-apt.sh
 
-.PHONY: ubuntu-noble
-ubuntu-noble: scripts/build-apt.sh
-	@SOURCE=./src/ubuntu-noble CODENAME=noble PUBLIC=./public/noble ./scripts/build-apt.sh
+.PHONY: public/jammy
+public/jammy: scripts/build-apt.sh
+	@GPG_KEY_ID="$$GPG_KEY_ID" SOURCE=./src/ubuntu-jammy CODENAME=jammy PUBLIC=./public/jammy ./scripts/build-apt.sh
 
-.PHONY: ubuntu-jammy
-ubuntu-jammy: scripts/build-apt.sh
-	@SOURCE=./src/ubuntu-jammy CODENAME=jammy PUBLIC=./public/jammy ./scripts/build-apt.sh
+.PHONY: public/fedora
+public/fedora: scripts/build-dnf.sh
+	@GPG_KEY_ID="$$GPG_KEY_ID" ./$<
 
-.PHONY: fedora
-fedora: scripts/build-dnf.sh
-	@./$<
+.PHONY: public/arch
+public/arch: scripts/build-pacman.sh
+	@GPG_KEY_ID="$$GPG_KEY_ID" ./$<
 
-.PHONY: arch
-arch: scripts/build-pacman.sh
-	@./$<
-
-.PHONY: test
-test: scripts/test-digest.sh
+.PHONY: verify-checksums
+verify-checksums: scripts/verify-checksums.sh
 	@./$<
 
 .PHONY: clean
-clean:
-	rm -rf public
+clean: clean/public
+
+clean/public:
+	rm -rf "public"
