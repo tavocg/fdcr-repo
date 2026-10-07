@@ -69,9 +69,9 @@ Repositorio de dependencias para Firma Digital en Costa Rica
   ```
 
 2. Instalar repositorio
-  Add this section to `/etc/pacman.conf`:
   ```sh
-  sudo tee /etc/pacman.conf > /dev/null <<'INI'
+  sudo tee -a /etc/pacman.conf > /dev/null <<'INI'
+
   [fdcr]
   SigLevel = Required
   Server = https://tavocg.github.io/fdcr-repo/arch/
