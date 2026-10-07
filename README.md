@@ -4,6 +4,7 @@ Repositorio de dependencias para Firma Digital en Costa Rica
 
 - [Construcción](doc/build.md)
 - [Nix](doc/nix.md)
+- [Otros paquetes](doc/packages.md)
 
 ## Instalación
 
@@ -63,16 +64,18 @@ Repositorio de dependencias para Firma Digital en Costa Rica
   ```sh
   curl -fsSL https://tavocg.github.io/fdcr-repo/fdcr.asc -o /tmp/fdcr.asc
   sudo pacman-key --add /tmp/fdcr.asc
-  sudo pacman-key --finger "YOUR_SIGNING_KEY_ID"
-  sudo pacman-key --lsign-key "YOUR_SIGNING_KEY_ID"
+  sudo pacman-key --lsign-key "$(gpg --show-keys --with-colons /tmp/fdcr.asc | sed '/fpr/!d;s/:$//;s/.*://')"
+  rm -f /tmp/fdcr.asc
   ```
 
 2. Instalar repositorio
   Add this section to `/etc/pacman.conf`:
-  ```ini
+  ```sh
+  sudo tee /etc/pacman.conf > /dev/null <<'INI'
   [fdcr]
   SigLevel = Required
   Server = https://tavocg.github.io/fdcr-repo/arch/
+  INI
   ```
 
 3. Actualizar índice e instalar software
