@@ -1,30 +1,30 @@
-# Clients
+# Instalación
 
 ## Ubuntu 24.04
 
-1. Install key
+1. Instalar llave
   ```sh
   sudo curl -fsSLo /usr/share/keyrings/fdcr.asc https://tavocg.github.io/fdcr-repo/fdcr.asc
   ```
 
-2. Install repo
+2. Instalar repositorio
   ```sh
   echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/fdcr.asc] https://tavocg.github.io/fdcr-repo/noble noble main' | sudo tee /etc/apt/sources.list.d/fdcr.list
   ```
 
-3. Update sources
+3. Refrescar índice
   ```sh
   sudo apt update
   ```
 
-4. Install software
+4. Instalar paquetes
   ```sh
   sudo apt install fdcr-middleware-idopte
   ```
 
 ## Fedora
 
-1. Install key
+1. Instalar llave
   ```sh
   sudo curl -fsSLo /etc/pki/rpm-gpg/fdcr.asc https://tavocg.github.io/fdcr-repo/fdcr.asc
   ```
@@ -32,7 +32,7 @@
   sudo rpm --import /etc/pki/rpm-gpg/fdcr.asc
   ```
 
-2. Install repo
+2. Instalar repositorio
   ```sh
   sudo tee /etc/yum.repos.d/fdcr.repo > /dev/null <<'INI'
   [fdcr]
@@ -45,19 +45,19 @@
   INI
   ```
 
-3. Refresh cache
+3. Refrescar cache
   ```sh
   sudo dnf makecache --refresh
   ```
 
-4. Install software
+4. Instalar paquetes
   ```sh
   sudo dnf install fdcr-middleware-idopte
   ```
 
 ## Arch
 
-1. Install key
+1. Instalar llave
   ```sh
   curl -fsSL https://example.com/fdcr.asc -o /tmp/fdcr.asc
   sudo pacman-key --add /tmp/fdcr.asc
@@ -65,7 +65,7 @@
   sudo pacman-key --lsign-key "YOUR_SIGNING_KEY_ID"
   ```
 
-2. Install repo
+2. Instalar repositorio
   Add this section to `/etc/pacman.conf`:
   ```ini
   [fdcr]
@@ -73,9 +73,7 @@
   Server = https://tavocg.github.io/fdcr-repo/arch/
   ```
 
-3. Update sources and install software
+3. Actualizar índice e instalar software
   ```sh
   sudo pacman -Syu fdcr-middleware-idopte
   ```
-
-[Back to README](../README.md)
