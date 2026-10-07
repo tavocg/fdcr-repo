@@ -1,0 +1,5 @@
+./.exclude
+./DEBIAN/control
+./DEBIAN/conffiles
+./usr/share/applications/SCManager.desktop
+./etc/xdg/autostart/SCManager.desktop
