@@ -8,14 +8,9 @@
   expat,
   fontconfig,
   freetype,
-  glib,
-  gtk3,
-  libappindicator-gtk3,
-  libnotify,
   libpng,
   libxml2_13,
   pcsclite,
-  webkitgtk_4_1,
   zlib,
   version,
 }:
@@ -35,14 +30,9 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     expat
     fontconfig
     freetype
-    glib
-    gtk3
-    libappindicator-gtk3
-    libnotify
     libpng
     libxml2_13
     pcsclite
-    webkitgtk_4_1
     zlib
   ];
 

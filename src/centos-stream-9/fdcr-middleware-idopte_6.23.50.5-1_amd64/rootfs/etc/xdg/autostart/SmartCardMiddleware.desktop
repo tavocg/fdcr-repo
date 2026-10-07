@@ -1,9 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Name=SCManager
-Exec=/usr/lib/SCMiddleware/SCManager
-Icon=/usr/share/SCMiddleware/application.png
-Terminal=false
-Type=Application
-Categories=Application;Utility;
-Version=0.9.4

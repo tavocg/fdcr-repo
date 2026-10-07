@@ -32,13 +32,8 @@ tar -xzf %{SOURCE0} -C %{buildroot}
 %config(noreplace) /etc/idoss.conf
 %config(noreplace) /etc/idoss.lic
 /etc/init.d/idocachesrv
-/etc/xdg/autostart/SmartCardMiddleware.desktop
 /usr/lib/SCMiddleware
 /usr/share/SCMiddleware
-/usr/share/applications/SmartCardMiddleware.desktop
-/usr/share/applications/pkcs7.desktop
-/usr/share/mime/packages/pkcs7-mime.xml
-/usr/share/nautilus-python/extensions/CryptoshellExtension.py
 %exclude /usr/lib/.build-id/*/*
 
 %changelog
