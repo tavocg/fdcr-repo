@@ -1,17 +1,15 @@
 # Clients
 
-If `public/` is published at `https://example.com/`.
-
 ## APT clients (Debian and Ubuntu)
 
 1. Install key
   ```sh
-  sudo curl -fsSLo /usr/share/keyrings/fdcr.asc https://example.com/fdcr.asc
+  sudo curl -fsSLo /usr/share/keyrings/fdcr.asc https://tavocg.github.io/fdcr-repo/fdcr.asc
   ```
 
 2. Install repo
   ```sh
-  echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/fdcr.asc] https://example.com/noble noble main' | sudo tee /etc/apt/sources.list.d/fdcr.list
+  echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/fdcr.asc] https://tavocg.github.io/fdcr-repo/noble noble main' | sudo tee /etc/apt/sources.list.d/fdcr.list
   ```
 
 3. Update sources
@@ -28,7 +26,9 @@ If `public/` is published at `https://example.com/`.
 
 1. Install key
   ```sh
-  sudo curl -fsSLo /etc/pki/rpm-gpg/fdcr.asc https://example.com/fdcr.asc
+  sudo curl -fsSLo /etc/pki/rpm-gpg/fdcr.asc https://tavocg.github.io/fdcr-repo/fdcr.asc
+  ```
+  ```sh
   sudo rpm --import /etc/pki/rpm-gpg/fdcr.asc
   ```
 
@@ -36,8 +36,8 @@ If `public/` is published at `https://example.com/`.
   ```sh
   sudo tee /etc/yum.repos.d/fdcr.repo > /dev/null <<'INI'
   [fdcr]
-  name=Soporte Firma Digital
-  baseurl=https://example.com/centos-stream-9/
+  name=FDCR Repository
+  baseurl=https://tavocg.github.io/fdcr-repo/centos-stream-9/
   enabled=1
   gpgcheck=0
   repo_gpgcheck=1
@@ -71,7 +71,7 @@ If `public/` is published at `https://example.com/`.
   ```ini
   [fdcr]
   SigLevel = Required
-  Server = https://example.com/arch/
+  Server = https://tavocg.github.io/fdcr-repo/arch/
   ```
 
 3. Update sources and install software
