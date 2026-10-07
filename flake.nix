@@ -19,13 +19,22 @@
       );
     in
     {
-      packages.x86_64-linux = import ./nix/packages.nix { pkgs = pkgsFor.x86_64-linux; };
+      packages.x86_64-linux =
+        (import ./nix/packages.nix {
+          pkgs = pkgsFor.x86_64-linux;
+        })
+        // {
+          build-public = import ./nix/build-public.nix {
+            pkgs = pkgsFor.x86_64-linux;
+          };
+        };
+
+      legacyPackages.x86_64-linux = import ./nix/packages.nix { pkgs = pkgsFor.x86_64-linux; };
 
       nixosModules = {
         fdcr = import ./nix/modules/fdcr.nix {
           inherit self;
         };
-
         default = self.nixosModules.fdcr;
       };
 
