@@ -8,20 +8,6 @@
   text = ''
     set -euo pipefail
     export MAKEPKG_CONF="${pkgs.pacman}/etc/makepkg.conf"
-
-    case "''${1:-}" in
-      --sign)
-        make sign
-        ;;
-
-      "")
-        make repos
-        ;;
-
-      *)
-        echo "Usage: build-public [--sign]" >&2
-        exit 2
-        ;;
-    esac
+    make all
   '';
 }
