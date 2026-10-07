@@ -42,11 +42,15 @@
           config = lib.mkIf cfg.enable {
             services.pcscd.enable = true;
 
-            environment.etc."idoss.conf".source =
-              "${cfg.package}/etc/idoss.conf";
+            environment.etc."idoss.conf".source = "${cfg.package}/etc/idoss.conf";
 
-            environment.etc."idoss.lic".source =
-              "${cfg.package}/etc/idoss.lic";
+            environment.etc."idoss.lic".source = "${cfg.package}/etc/idoss.lic";
+
+            systemd.tmpfiles.rules = [
+              "d /usr/lib/SCMiddleware 0755 root root -"
+              "L+ /usr/lib/SCMiddleware/libt_ias.so - - - - ${cfg.package}/lib/SCMiddleware/libt_ias.so"
+              "L+ /usr/lib/SCMiddleware/idocachesrv - - - - ${cfg.package}/lib/SCMiddleware/idocachesrv"
+            ];
           };
         };
 
