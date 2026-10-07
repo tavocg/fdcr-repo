@@ -11,20 +11,6 @@
 
     case "''${1:-}" in
       --sign)
-        if [ -f .env ]; then
-          set -a
-
-          # shellcheck disable=SC1091
-          . ./.env
-
-          set +a
-        fi
-
-        if [ -z "''${GPG_KEY_ID:-}" ]; then
-          echo "Error: GPG_KEY_ID is not set" >&2
-          exit 1
-        fi
-
         make sign
         ;;
 
