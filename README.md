@@ -40,18 +40,29 @@ gpg --armor --export "$GPG_KEY_ID" > public/fdcr.asc
 
 ## Nix
 
-Allow unfree packages in your Nix configuration before installing the
-proprietary middleware. To install the latest version:
+Add the flake input:
 
-```sh
-NIXPKGS_ALLOW_UNFREE=1 nix profile add --impure github:tavocg/fdcr-repo#fdcr-middleware-idopte
+```nix
+fdcr = {
+  url = "github:tavocg/fdcr-repo";
+  inputs.nixpkgs.follows = "nixpkgs";
+};
 ```
 
-To pin a version, use its versioned attribute, such as
-`fdcr-middleware-idopte-6.23.50.5-1`:
+Use in `environment.systemPackages` or `home.packages` (`x86_64-linux`):
+
+```nix
+inputs.fdcr.packages.${pkgs.stdenv.hostPlatform.system}.fdcr-middleware-idopte
+# Or select a specific version:
+inputs.fdcr.packages.${pkgs.stdenv.hostPlatform.system}."fdcr-middleware-idopte-6.23.50.5-1"
+```
+
+`default` is an alias for the latest middleware. To install directly:
 
 ```sh
-NIXPKGS_ALLOW_UNFREE=1 nix profile add --impure github:tavocg/fdcr-repo#fdcr-middleware-idopte-6.23.50.5-1
+nix profile add github:tavocg/fdcr-repo#fdcr-middleware-idopte
+# Or select a specific version:
+nix profile add 'github:tavocg/fdcr-repo#"fdcr-middleware-idopte-6.23.50.5-1"'
 ```
 
 ## Clients
