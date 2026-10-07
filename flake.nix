@@ -4,7 +4,7 @@
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
   outputs =
-    { nixpkgs, ... }:
+    { self, nixpkgs, ... }:
     let
       forAllSystems = nixpkgs.lib.genAttrs [
         "x86_64-linux"
@@ -22,6 +22,33 @@
     {
       # Packages currently target x86_64 Linux.
       packages.x86_64-linux = import ./nix/packages.nix { pkgs = pkgsFor.x86_64-linux; };
+
+      nixosModules.default =
+        { config, lib, ... }:
+        let
+          cfg = config.services.fdcr;
+        in
+        {
+          options.services.fdcr = {
+            enable = lib.mkEnableOption "Firma Digital de Costa Rica";
+
+            package = lib.mkOption {
+              type = lib.types.package;
+              default = self.packages.x86_64-linux.fdcr-middleware-idopte;
+              description = "Paquete del middleware Idopte.";
+            };
+          };
+
+          config = lib.mkIf cfg.enable {
+            services.pcscd.enable = true;
+
+            environment.etc."idoss.conf".source =
+              "${cfg.package}/etc/idoss.conf";
+
+            environment.etc."idoss.lic".source =
+              "${cfg.package}/etc/idoss.lic";
+          };
+        };
 
       devShells = forAllSystems (system: {
         default = import ./nix/shell.nix { pkgs = pkgsFor.${system}; };
