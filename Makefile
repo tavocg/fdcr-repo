@@ -1,4 +1,18 @@
-all: ubuntu-noble ubuntu-jammy centos-stream arch
+all: sign
+
+.PHONY: sign
+sign:
+	@set -a; \
+	[ -f .env ] && . ./.env; \
+	set +a; \
+	if [ -z "$$GPG_KEY_ID" ]; then \
+		echo "Error: GPG_KEY_ID is not set"; \
+		exit 1; \
+	fi; \
+	$(MAKE) repos GPG_KEY_ID="$$GPG_KEY_ID"
+
+.PHONY: repos
+repos: ubuntu-noble ubuntu-jammy centos-stream arch
 
 .PHONY: ubuntu-noble
 ubuntu-noble: scripts/build-apt.sh
