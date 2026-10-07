@@ -69,12 +69,12 @@ buildFHSEnv {
     pkgs.coreutils
     pkgs.gnugrep
     pkgs.gnused
-    # # SCManager shells out to openssl/awk and reads GNOME proxy settings.
-    # # Library closures alone do not provide these executables or schemas.
-    # pkgs.gawk
-    # (lib.getBin pkgs.openssl)
-    # (lib.getBin pkgs.glib)
-    # pkgs.gsettings-desktop-schemas
+    # SCManager shells out to openssl/awk and reads GNOME proxy settings.
+    # Library closures alone do not provide these executables or schemas.
+    pkgs.gawk
+    (lib.getBin pkgs.openssl)
+    (lib.getBin pkgs.glib)
+    pkgs.gsettings-desktop-schemas
     pkgs.procps
     pkgs.lsof
     pkgs.zenity
