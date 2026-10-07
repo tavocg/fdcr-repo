@@ -24,6 +24,11 @@ let
     };
 
     fdcr-middleware-idopte = packages."fdcr-middleware-idopte-6.23.50.5-1";
+    "fdcr-scmanager-6.23.50.5-1" = pkgs.callPackage ./fdcr-scmanager.nix {
+      version = "6.23.50.5-1";
+      middleware = packages."fdcr-middleware-idopte-6.23.50.5-1";
+    };
+    fdcr-scmanager = packages."fdcr-scmanager-6.23.50.5-1";
     default = packages.fdcr-middleware-idopte;
   };
 in

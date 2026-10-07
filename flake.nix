@@ -14,7 +14,11 @@
         system:
         import nixpkgs {
           inherit system;
-          config.allowUnfreePredicate = pkg: nixpkgs.lib.getName pkg == "fdcr-middleware-idopte";
+          config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [
+            "fdcr-middleware-idopte"
+            "fdcr-scmanager"
+            "fdcr-scmanager-unwrapped"
+          ];
         }
       );
     in
