@@ -51,11 +51,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     mkdir -p "$out" "$out/etc"
     cp -a usr/. "$out/"
     cp -a etc/. "$out/etc/"
-
-    substituteInPlace "$out/etc/idoss.conf" \
-      --replace-fail "IAS = libt_ias.so" \
-        "IAS = $out/lib/SCMiddleware/libt_ias.so"
-
     runHook postInstall
   '';
 
