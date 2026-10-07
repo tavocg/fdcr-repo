@@ -1,5 +1,6 @@
 #!/bin/sh
-# External programs required: dpkg-deb, dpkg-scanpackages, gzip, apt-ftparchive.
+# External programs required: dpkg-deb, dpkg-scanpackages, gzip, apt-ftparchive,
+# cp, rm, and mktemp.
 # Optional: gpg, required only when GPG_KEY_ID is set.
 
 if [ -f .env ]; then
@@ -28,15 +29,21 @@ DIST="$RELEASE_DIR/$REPO_COMPONENT"   # ./public/noble/dists/noble/main
 # Build one Debian package from a directory containing its package tree.
 # Argument: package directory (for example, /path/to/firmador_1.0.0_amd64).
 # Output: writes the .deb file into $POOL; returns nonzero on failure.
-build_deb_package() {
+build_deb_package() (
   pkg_dir="$1"
 
   if ! [ -d "$pkg_dir" ]; then
     return 1
   fi
 
-  dpkg-deb --root-owner-group --build "$pkg_dir" "$POOL" >&2
-}
+  # .exclude describes source verification, not an installed file. In a split
+  # package it would otherwise conflict at /.exclude with the middleware.
+  staging_dir=$(mktemp -d "${TMPDIR:-/tmp}/build-apt.XXXXXX")
+  trap 'rm -rf "$staging_dir"' EXIT HUP INT TERM
+  cp -a "$pkg_dir/." "$staging_dir/"
+  rm -f "$staging_dir/.exclude"
+  dpkg-deb --root-owner-group --build "$staging_dir" "$POOL" >&2
+)
 
 # Print a whitespace-separated list with $2 appended only if it is not present.
 # Arguments: existing list and value to append. Output: updated list on stdout.

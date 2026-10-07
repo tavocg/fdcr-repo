@@ -115,7 +115,7 @@ extract_archive() {
   *.tar.gz | *.tgz) tar -xzf "$archive" -C "$destination" ;;
   *.tar) tar -xf "$archive" -C "$destination" ;;
   *.rar) unar -o "$destination" "$archive" ;;
-  *.zip) unzip -q "$archive" -d "$destination" ;;
+  *.zip | *.bin) unzip -q "$archive" -d "$destination" ;;
   *.deb) (cd "$destination" && ar x "$archive") ;;
   *.rpm) (cd "$destination" && rpm2cpio "$archive" | cpio -idm --quiet) ;;
   *.bz2) bunzip2 -c "$archive" >"$destination/${archive_name%.bz2}" ;;
@@ -139,8 +139,14 @@ trusted_digests() {
     digest=$(sha256sum "$file") || exit 1
     printf '%s\n' "${digest%% *}"
 
+    # Idopte stores shared resources and XML schemas in ZIP files named .bin.
+    # Other .bin files are opaque and only need their own digest checked.
     case "$file" in
-    *.tar.bz2|*.tbz2|*.tar.zst|*.tar.xz|*.tar.gz|*.tgz|*.tar|*.rar|*.zip|*.deb|*.rpm|*.bz2|*.7z|*.gz|*.xz|*.Z)
+    *.bin) unzip -tq "$file" >/dev/null 2>&1 || continue ;;
+    esac
+
+    case "$file" in
+    *.tar.bz2|*.tbz2|*.tar.zst|*.tar.xz|*.tar.gz|*.tgz|*.tar|*.rar|*.zip|*.bin|*.deb|*.rpm|*.bz2|*.7z|*.gz|*.xz|*.Z)
       nested_dir=$(mktemp -d "${TMPDIR:-/tmp}/test-digest-nested.XXXXXX") || exit 1
       if extract_archive "$file" "$nested_dir"; then
         trusted_digests "$nested_dir" || {
@@ -214,6 +220,16 @@ verify_package() {
   exclude="$package_dir/.exclude"
   payload_dir="$package_dir"
   archive=
+
+  # Split packages may share the same original vendor archive.
+  if [ -f "$package_dir.source" ]; then
+    IFS= read -r archive_name <"$package_dir.source"
+    archive="$package_parent/$archive_name"
+    if [ ! -f "$archive" ]; then
+      printf 'Missing shared source archive: %s\n' "$archive" >&2
+      return 1
+    fi
+  fi
 
   if [ -d "$package_dir/rootfs" ]; then
     payload_dir="$package_dir/rootfs"
