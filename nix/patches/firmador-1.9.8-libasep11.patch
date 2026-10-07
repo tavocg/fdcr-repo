@@ -1,0 +1,13 @@
+Backport the LIBASEP11 override from newer Firmador releases.
+
+--- a/src/main/java/cr/libre/firmador/CRSigner.java
++++ b/src/main/java/cr/libre/firmador/CRSigner.java
+@@ -107,6 +107,8 @@
+     public static String getPkcs11Lib() {
+         String osName = System.getProperty("os.name").toLowerCase();
+         Settings settings = SettingsManager.getInstance().getAndCreateSettings();
++        String envLibValue = System.getenv("LIBASEP11");
++        if (envLibValue != null && !envLibValue.isEmpty()) return envLibValue;
+         if (settings.extraPKCS11Lib != null && !settings.extraPKCS11Lib.isEmpty()) return settings.extraPKCS11Lib;
+         String jcop4 = detectJCOP4PKCS11Lib();
+         if (jcop4 != null)

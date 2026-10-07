@@ -20,7 +20,7 @@
       );
     in
     {
-      # The vendor only provides x86_64 binaries.
+      # Packages currently target x86_64 Linux.
       packages.x86_64-linux = import ./nix/packages.nix { pkgs = pkgsFor.x86_64-linux; };
 
       devShells = forAllSystems (system: {
