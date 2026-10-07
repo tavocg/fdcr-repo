@@ -24,10 +24,30 @@
   options.services.fdcr = {
     enable = lib.mkEnableOption "Firma Digital de Costa Rica";
 
+    middleware.enable = lib.mkEnableOption "el middleware Idopte";
+
     package = lib.mkOption {
       type = lib.types.package;
       default = middleware;
       description = "Paquete del middleware Idopte.";
+    };
+
+    certificates = {
+      enable = lib.mkEnableOption "las CA raíz de Firma Digital en el almacén del sistema";
+      package = lib.mkOption {
+        type = lib.types.package;
+        default = self.packages.${system}.fdcr-bccr-certs;
+        description = "Paquete de certificados y conjuntos PEM de Firma Digital.";
+      };
+    };
+
+    gaudi = {
+      enable = lib.mkEnableOption "el agente GAUDI y su inicio de sesión gráfico";
+      package = lib.mkOption {
+        type = lib.types.package;
+        default = self.packages.${system}.fdcr-bccr-gaudi;
+        description = "Paquete del agente GAUDI.";
+      };
     };
 
     scmanager = {
@@ -52,9 +72,17 @@
   config = lib.mkIf cfg.enable {
     services.pcscd.enable = true;
 
-    environment.systemPackages = lib.mkIf cfg.scmanager.enable (
-      [ scmanager ] ++ lib.optional cfg.scmanager.nautilus.enable pkgs.nautilus-python
-    );
+    services.fdcr.middleware.enable = lib.mkDefault cfg.scmanager.enable;
+    security.pki.certificateFiles = lib.mkIf cfg.certificates.enable [
+      "${cfg.certificates.package}/etc/ssl/certs/fdcr-roots.pem"
+    ];
+
+    environment.systemPackages =
+      lib.optional cfg.gaudi.enable cfg.gaudi.package
+      ++ lib.optional cfg.certificates.enable cfg.certificates.package
+      ++ lib.optionals cfg.scmanager.enable (
+        [ scmanager ] ++ lib.optional cfg.scmanager.nautilus.enable pkgs.nautilus-python
+      );
     environment.pathsToLink = lib.mkIf (cfg.scmanager.enable && cfg.scmanager.nautilus.enable) [
       "/share/nautilus-python/extensions"
     ];
@@ -62,12 +90,12 @@
       NAUTILUS_4_EXTENSION_DIR = "${config.system.path}/lib/nautilus/extensions-4";
     };
 
-    environment.etc = {
+    environment.etc = lib.mkIf cfg.middleware.enable {
       "idoss.conf".source = "${cfg.package}/etc/idoss.conf";
       "idoss.lic".source = "${cfg.package}/etc/idoss.lic";
     };
 
-    systemd.tmpfiles.rules = [
+    systemd.tmpfiles.rules = lib.mkIf cfg.middleware.enable [
       "d /usr/lib/SCMiddleware 0755 root root -"
       "L+ /usr/lib/SCMiddleware/libt_ias.so - - - - ${cfg.package}/lib/SCMiddleware/libt_ias.so"
       "L+ /usr/lib/SCMiddleware/idocachesrv - - - - ${cfg.package}/lib/SCMiddleware/idocachesrv"

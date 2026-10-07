@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+case "${1:-}" in
+  configure)
+    staging=$(mktemp -d)
+    trap 'rm -rf "$staging"' EXIT HUP INT TERM
+    /usr/lib/fdcr-bccr-certs/build-pem /usr/share/fdcr-bccr-certs/originals "$staging"
+    install -d -m 755 /var/lib/fdcr-bccr-certs /usr/local/share/ca-certificates/fdcr
+    # Remove certificates from previous versions before installing the new set.
+    rm -f /usr/local/share/ca-certificates/fdcr/*.crt
+    install -m 644 "$staging"/roots/*.crt /usr/local/share/ca-certificates/fdcr/
+    install -m 644 "$staging"/*.pem /var/lib/fdcr-bccr-certs/
+    update-ca-certificates --fresh
+    ;;
+esac

@@ -1,6 +1,6 @@
 # Nix
 
-Add the flake input:
+Agrega el input al flake:
 
 ```nix
 fdcr = {
@@ -9,46 +9,59 @@ fdcr = {
 };
 ```
 
-Use in `environment.systemPackages` or `home.packages` (`x86_64-linux`):
+## NixOS
+
+Importa el módulo y habilita los componentes que necesites (`x86_64-linux`):
 
 ```nix
-inputs.fdcr.packages.${pkgs.stdenv.hostPlatform.system}.fdcr-middleware-idopte
-# Or select a specific version:
-inputs.fdcr.packages.${pkgs.stdenv.hostPlatform.system}."fdcr-middleware-idopte-6.23.50.5-1"
+{
+  imports = [ inputs.fdcr.nixosModules.fdcr ];
+  services.fdcr = {
+    enable = true;
+    gaudi.enable = true;
+    middleware.enable = true;
+    certificates.enable = true;
+    scmanager.enable = true;
+  };
+}
 ```
 
-`default` is an alias for the latest middleware. To install directly:
+Aplica la configuración con `sudo nixos-rebuild switch` y abre GAUDI con
+`agente-gaudi` o SCManager con `SCManager`.
+
+## Paquetes individuales
+
+Agrega los paquetes a `environment.systemPackages` o `home.packages`:
+
+```nix
+let
+  fdcr = inputs.fdcr.packages.${pkgs.stdenv.hostPlatform.system};
+in
+[
+  fdcr.fdcr-middleware-idopte
+  fdcr.fdcr-scmanager
+  fdcr.fdcr-bccr-gaudi
+  fdcr.fdcr-bccr-certs
+  fdcr.firmador
+]
+```
+
+También puedes instalarlos con `nix profile add`, por ejemplo:
 
 ```sh
-nix profile add github:tavocg/fdcr-repo#fdcr-middleware-idopte
-# Or select a specific version:
-nix profile add 'github:tavocg/fdcr-repo#"fdcr-middleware-idopte-6.23.50.5-1"'
+nix profile add github:tavocg/fdcr-repo#firmador
 ```
 
 ## Firmador Libre
 
-Use `inputs.fdcr.packages.${pkgs.stdenv.hostPlatform.system}.firmador`, or install directly:
-
 ```sh
-nix profile add github:tavocg/fdcr-repo#firmador
-firmador                              # Desktop interface
-firmador -dshell                      # Interactive console
+firmador                                 # Interfaz gráfica
+firmador -dshell                         # Consola interactiva
 firmador -dargs original.pdf firmado.pdf
-LIBASEP11=/path/to/driver.so firmador  # Select a PKCS#11 driver
+LIBASEP11=/ruta/al/driver.so firmador     # Driver PKCS#11
 ```
 
-`firmador` selects `firmador_2_0` (2.0.0). To select `firmador_1_9` (1.9.8):
-
-```nix
-inputs.fdcr.packages.${pkgs.stdenv.hostPlatform.system}.firmador_1_9
-```
-
-```sh
-nix profile add github:tavocg/fdcr-repo#firmador_1_9
-```
-
-Built from source with Maven; includes a desktop launcher for `firmador:` links.
-No proprietary middleware is included by default. To opt into Idopte at your own risk:
+Para usar Idopte, agrega este paquete a tu configuración:
 
 ```nix
 let
@@ -59,9 +72,9 @@ fdcr.firmador.override {
 }
 ```
 
-`pkcs11Module` accepts any compatible driver path; `LIBASEP11` takes precedence.
-Version 1.9.8 includes a backport of `LIBASEP11` support.
-For card readers on NixOS, enable `services.pcscd.enable = true;`.
-See the [upstream usage guide](https://codeberg.org/firmador/firmador/src/branch/master/preguntas-frecuentes.md).
+Habilita `services.pcscd.enable = true;` si no usas el módulo FDCR.
+Para la versión 1.9.8, selecciona `firmador_1_9` en lugar de `firmador`.
 
-[Back to README](../README.md)
+[Guía de uso de Firmador](https://codeberg.org/firmador/firmador/src/branch/master/preguntas-frecuentes.md)
+
+[Volver al README](../README.md)

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=29.0
+Name=Agente-GAUDI
+Comment=Agente-GAUDI
+GenericName=Agente-GAUDI
+Exec=/opt/Agente-GAUDI/bin/Agente-GAUDI
+Icon=/opt/Agente-GAUDI/lib/Agente-GAUDI.png
+Terminal=false
+Type=Application
+Categories=Network;Application;
+StartupNotify=true
+MimeType=

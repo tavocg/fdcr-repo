@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+case "${1:-}" in
+  remove|purge)
+    rm -f /usr/local/share/ca-certificates/fdcr/*.crt
+    if [ -d /usr/local/share/ca-certificates/fdcr ]; then
+      rmdir /usr/local/share/ca-certificates/fdcr
+    fi
+    rm -f /var/lib/fdcr-bccr-certs/bundle.pem \
+      /var/lib/fdcr-bccr-certs/ca-bundle.pem /var/lib/fdcr-bccr-certs/roots.pem
+    if [ -d /var/lib/fdcr-bccr-certs ]; then
+      rmdir /var/lib/fdcr-bccr-certs
+    fi
+    if command -v update-ca-certificates >/dev/null 2>&1; then
+      update-ca-certificates --fresh
+    fi
+    ;;
+esac

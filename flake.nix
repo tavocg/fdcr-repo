@@ -18,6 +18,7 @@
             "fdcr-middleware-idopte"
             "fdcr-scmanager"
             "fdcr-scmanager-unwrapped"
+            "fdcr-bccr-gaudi"
           ];
         }
       );

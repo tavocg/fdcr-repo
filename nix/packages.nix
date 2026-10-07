@@ -2,6 +2,9 @@
 
 let
   packages = {
+    fdcr-bccr-certs = pkgs.callPackage ./fdcr-bccr-certs.nix { };
+    "fdcr-bccr-gaudi-29.0-1" = pkgs.callPackage ./fdcr-bccr-gaudi.nix { };
+    fdcr-bccr-gaudi = packages."fdcr-bccr-gaudi-29.0-1";
     firmador_1_9 = pkgs.callPackage ./firmador.nix {
       version = "1.9.8";
       rev = "09953947a51d87c2a146189ec76b6c27ab6518a1";
