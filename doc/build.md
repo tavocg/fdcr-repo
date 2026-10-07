@@ -1,5 +1,18 @@
 # Building repositories
 
+Install Git LFS before cloning, then download the source files:
+
+```sh
+git lfs install
+git clone https://github.com/tavocg/fdcr-repo.git
+cd fdcr-repo
+git lfs pull
+```
+
+The source ZIPs are listed in `.gitattributes`. Add new large files with
+`git lfs track --filename PATH` before staging them.
+Commit `.gitattributes` along with the files.
+
 Build all repositories with the signing key available in your GPG keyring:
 
 ```sh
