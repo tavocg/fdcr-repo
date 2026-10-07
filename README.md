@@ -45,7 +45,7 @@ Repositorio de dependencias para Firma Digital en Costa Rica
   sudo tee /etc/yum.repos.d/fdcr.repo > /dev/null <<'INI'
   [fdcr]
   name=FDCR Repository
-  baseurl=https://tavocg.github.io/fdcr-repo/centos-stream-9/
+  baseurl=https://tavocg.github.io/fdcr-repo/fedora/
   enabled=1
   gpgcheck=0
   repo_gpgcheck=1

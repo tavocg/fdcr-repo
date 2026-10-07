@@ -12,7 +12,7 @@ sign:
 	$(MAKE) repos GPG_KEY_ID="$$GPG_KEY_ID"
 
 .PHONY: repos
-repos: ubuntu-noble ubuntu-jammy centos-stream arch
+repos: ubuntu-noble ubuntu-jammy fedora arch
 
 .PHONY: ubuntu-noble
 ubuntu-noble: scripts/build-apt.sh
@@ -22,8 +22,8 @@ ubuntu-noble: scripts/build-apt.sh
 ubuntu-jammy: scripts/build-apt.sh
 	@SOURCE=./src/ubuntu-jammy CODENAME=jammy PUBLIC=./public/jammy ./scripts/build-apt.sh
 
-.PHONY: centos-stream
-centos-stream: scripts/build-dnf.sh
+.PHONY: fedora
+fedora: scripts/build-dnf.sh
 	@./$<
 
 .PHONY: arch

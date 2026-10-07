@@ -15,7 +15,7 @@ Ubuntu releases can use that builder with their own source directory, suite,
 and codename.
 
 The build targets create separate repositories in `public/noble/`,
-`public/jammy/`, `public/centos-stream-9/`, and `public/arch/`.
+`public/jammy/`, `public/fedora/`, and `public/arch/`.
 
 Source packages are organized by target distribution and release, rather than
 by package format:
@@ -24,7 +24,7 @@ by package format:
 | --- | --- |
 | `src/ubuntu-noble/` | Ubuntu 24.04 LTS (Noble Numbat), built as APT packages |
 | `src/ubuntu-jammy/` | Ubuntu 22.04 LTS (Jammy Jellyfish), built as APT packages |
-| `src/centos-stream-9/` | CentOS Stream 9, built as RPM packages |
+| `src/fedora/` | Fedora, built as RPM packages |
 | `src/arch/` | Arch Linux rolling release, built as Pacman packages |
 
 This allows distribution-specific package variants to coexist, such as a

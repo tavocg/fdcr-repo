@@ -8,8 +8,8 @@ fi
 
 set -eu
 
-: "${SOURCE:=./src/centos-stream-9}"
-: "${PUBLIC:=./public/centos-stream-9}"
+: "${SOURCE:=./src/fedora}"
+: "${PUBLIC:=./public/fedora}"
 : "${GPG_KEY_ID:=}"
 
 # Build one RPM from a source package directory containing a .spec and rootfs/.
