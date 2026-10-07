@@ -1,6 +1,6 @@
 # Clients
 
-## APT clients (Debian and Ubuntu)
+## Ubuntu 24.04
 
 1. Install key
   ```sh
@@ -22,7 +22,7 @@
   sudo apt install fdcr-middleware-idopte
   ```
 
-## DNF clients (Fedora, RHEL, and compatible systems)
+## Fedora
 
 1. Install key
   ```sh
@@ -55,8 +55,7 @@
   sudo dnf install fdcr-middleware-idopte
   ```
 
-
-## Pacman clients (Arch Linux and compatible systems)
+## Arch
 
 1. Install key
   ```sh

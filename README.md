@@ -2,8 +2,6 @@
 
 Repositorio de dependencias para Firma Digital en Costa Rica
 
-## Documentation
-
-- [Building and publishing repositories](doc/building.md)
-- [Nix: installation, versions, and Firmador Libre](doc/nix.md)
-- [APT, DNF, and Pacman clients](doc/clients.md)
+- [Instalar](doc/install.md)
+- [Construcción](doc/build.md)
+- [Nix](doc/nix.md)
