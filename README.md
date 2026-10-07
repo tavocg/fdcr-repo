@@ -33,9 +33,9 @@ Repositorio de dependencias para Firma Digital en Costa Rica
 
 1. Instalar llave
   ```sh
-  sudo curl -fsSLo /etc/pki/rpm-gpg/fdcr.asc https://tavocg.github.io/fdcr-repo/fdcr.asc
-  ```
-  ```sh
+  curl -fsSLo /tmp/fdcr.asc https://tavocg.github.io/fdcr-repo/fdcr.asc
+  sudo install -Dm644 /tmp/fdcr.asc /etc/pki/rpm-gpg/fdcr.asc
+  rm -f /tmp/fdcr.asc
   sudo rpm --import /etc/pki/rpm-gpg/fdcr.asc
   ```
 
@@ -52,11 +52,6 @@ Repositorio de dependencias para Firma Digital en Costa Rica
   INI
   ```
 
-3. Refrescar cache
-  ```sh
-  sudo dnf makecache --refresh
-  ```
-
 4. Instalar paquetes
   ```sh
   sudo dnf install fdcr-middleware-idopte
@@ -66,7 +61,7 @@ Repositorio de dependencias para Firma Digital en Costa Rica
 
 1. Instalar llave
   ```sh
-  curl -fsSL https://example.com/fdcr.asc -o /tmp/fdcr.asc
+  curl -fsSL https://tavocg.github.io/fdcr-repo/fdcr.asc -o /tmp/fdcr.asc
   sudo pacman-key --add /tmp/fdcr.asc
   sudo pacman-key --finger "YOUR_SIGNING_KEY_ID"
   sudo pacman-key --lsign-key "YOUR_SIGNING_KEY_ID"
