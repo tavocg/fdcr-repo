@@ -33,8 +33,7 @@ jobs:
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
-          printf '%s\n' "$GPG_PRIVATE_KEY" \
-            | gpg --batch --import
+          printf '%s\n' "$GPG_PRIVATE_KEY" | gpg --batch --import
 
       - name: Verify signing key
         env:
@@ -46,21 +45,11 @@ jobs:
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
-          nix run .#build-public -- --sign
-
-      - name: Export public GPG key
-        env:
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-        run: |
-          gpg --armor --export "$GPG_KEY_ID" > public/fdcr.asc
+          nix run .#build-public
 
       - name: Disable Jekyll
         run: |
           touch public/.nojekyll
-
-      - name: Show generated files
-        run: |
-          find public -maxdepth 5 -type f | sort
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
