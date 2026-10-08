@@ -43,7 +43,7 @@ Agente GAUDI del BCCR con Java/JavaFX incluido.
 
 | Distro       | Empaquetado | Probado |
 |--------------|-------------|---------|
-| Arch Linux   |             |         |
+| Arch Linux   | arch        |         |
 | Fedora 45    | fedora      |         |
 | Fedora 44    | fedora      |         |
 | Fedora 43    | fedora      |         |

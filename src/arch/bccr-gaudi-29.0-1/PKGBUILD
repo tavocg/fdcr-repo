@@ -1,0 +1,18 @@
+pkgname=bccr-gaudi
+pkgver=29.0
+pkgrel=1
+pkgdesc='Agente GAUDI del Banco Central de Costa Rica, con Java/JavaFX incluido'
+arch=('x86_64')
+url='https://www.soportefirmadigital.com/'
+license=('LicenseRef-Proprietary')
+depends=('alsa-lib' 'at-spi2-core' 'cairo' 'fontconfig' 'freetype2' 'gcc-libs'
+         'gdk-pixbuf2' 'glib2' 'glibc' 'gtk3'
+         'libx11' 'libxext' 'libxi' 'libxrender' 'libxtst' 'libxxf86vm'
+         'mesa' 'pango' 'pcsclite' 'xdg-utils' 'zlib')
+provides=('agente-gaudi')
+conflicts=('agente-gaudi')
+options=('!strip')
+
+package() {
+  cp -a "$startdir/rootfs/." "$pkgdir/"
+}
