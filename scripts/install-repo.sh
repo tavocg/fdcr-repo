@@ -25,9 +25,20 @@ _install_ubuntu2404() {
   _install_apt "noble"
 }
 
+SUPPORTED="${SUPPORTED:+$SUPPORTED }ubuntu2604"
+_install_ubuntu2604() {
+  _install_apt "noble"
+}
+
 SUPPORTED="${SUPPORTED:+$SUPPORTED }debian13"
 _install_debian13() {
   _install_ubuntu2404
+}
+
+# LMDE 7 reports ID=linuxmint and VERSION_ID=7 in os-release.
+SUPPORTED="${SUPPORTED:+$SUPPORTED }linuxmint7"
+_install_linuxmint7() {
+  _install_apt "noble"
 }
 
 SUPPORTED="${SUPPORTED:+$SUPPORTED }ubuntu2204"
