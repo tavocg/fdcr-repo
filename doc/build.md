@@ -25,9 +25,6 @@ GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-pacman.sh
 The build targets create separate repositories in `public/noble/`,
 `public/jammy/`, `public/fedora/`, and `public/arch/`.
 
-Source packages are organized by target distribution and release, rather than
-by package format:
-
 | Source directory | Target |
 | --- | --- |
 | `src/ubuntu-noble/` | Ubuntu 24.04 LTS (Noble Numbat), built as APT packages |
