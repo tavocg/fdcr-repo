@@ -15,7 +15,7 @@ stdenvNoCC.mkDerivation {
     cp -r ${firmador.jar}/share/firmador "$out/usr/share/"
     cp -r ${firmador.jar}/share/icons "$out/usr/share/"
     chmod -R u+w "$out/usr/share"
-    install -Dm644 ${../../../src/ubuntu-noble/firmador_2.0.0-1_all/DEBIAN/control} "$out/DEBIAN/control"
+    install -Dm644 ${../../../src/noble/firmador_2.0.0-1_all/DEBIAN/control} "$out/DEBIAN/control"
     install -Dm644 ${firmador.jar.src}/flatpak/cr.libre.firmador.png \
       "$out/usr/share/icons/hicolor/128x128/apps/firmador.png"
     substitute ${firmador.jar.src}/flatpak/cr.libre.firmador.desktop \

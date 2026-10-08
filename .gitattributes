@@ -1,5 +1,5 @@
 # Source archives
 /src/arch/fdcr-middleware-idopte_6.23.50.5-1_amd64.source.zip filter=lfs diff=lfs merge=lfs -text
 /src/fedora/fdcr-middleware-idopte_6.23.50.5-1_amd64.source.zip filter=lfs diff=lfs merge=lfs -text
-/src/ubuntu-jammy/fdcr-middleware-idopte_6.23.50.5-1_amd64.source.zip filter=lfs diff=lfs merge=lfs -text
-/src/ubuntu-noble/fdcr-middleware-idopte_6.23.50.5-1_amd64.source.zip filter=lfs diff=lfs merge=lfs -text
+/src/jammy/fdcr-middleware-idopte_6.23.50.5-1_amd64.source.zip filter=lfs diff=lfs merge=lfs -text
+/src/noble/fdcr-middleware-idopte_6.23.50.5-1_amd64.source.zip filter=lfs diff=lfs merge=lfs -text

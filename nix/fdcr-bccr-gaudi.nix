@@ -1,6 +1,6 @@
 { lib, buildFHSEnv }:
 let
-  src = ../src/ubuntu-noble/fdcr-bccr-gaudi_29.0-1_amd64;
+  src = ../src/noble/fdcr-bccr-gaudi_29.0-1_amd64;
 in
 buildFHSEnv {
   pname = "fdcr-bccr-gaudi";

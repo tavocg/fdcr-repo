@@ -20,11 +20,11 @@ public/fdcr.asc:
 	fi
 
 .PHONY: public/noble
-public/noble: scripts/build-apt.sh src/ubuntu-noble/firmador_2.0.0-1_all
-	@GPG_KEY_ID="$$GPG_KEY_ID" SOURCE=./src/ubuntu-noble CODENAME=noble PUBLIC=./public/noble ./scripts/build-apt.sh
+public/noble: scripts/build-apt.sh src/noble/firmador_2.0.0-1_all
+	@GPG_KEY_ID="$$GPG_KEY_ID" SOURCE=./src/noble CODENAME=noble PUBLIC=./public/noble ./scripts/build-apt.sh
 
-.PHONY: src/ubuntu-noble/firmador_2.0.0-1_all
-src/ubuntu-noble/firmador_2.0.0-1_all:
+.PHONY: src/noble/firmador_2.0.0-1_all
+src/noble/firmador_2.0.0-1_all:
 	@set -eu; \
 	output=$$(nix build --no-link --print-out-paths '$(NIX_FLAKE)#"firmador-noble-2.0.0-1"'); \
 	mkdir -p "$@"; \
@@ -33,7 +33,7 @@ src/ubuntu-noble/firmador_2.0.0-1_all:
 
 .PHONY: public/jammy
 public/jammy: scripts/build-apt.sh
-	@GPG_KEY_ID="$$GPG_KEY_ID" SOURCE=./src/ubuntu-jammy CODENAME=jammy PUBLIC=./public/jammy ./scripts/build-apt.sh
+	@GPG_KEY_ID="$$GPG_KEY_ID" SOURCE=./src/jammy CODENAME=jammy PUBLIC=./public/jammy ./scripts/build-apt.sh
 
 .PHONY: public/fedora
 public/fedora: scripts/build-dnf.sh

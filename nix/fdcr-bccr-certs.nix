@@ -2,7 +2,7 @@
 stdenvNoCC.mkDerivation {
   pname = "fdcr-bccr-certs";
   version = "2026.08-1";
-  src = ../src/ubuntu-noble/fdcr-bccr-certs_2026.08-1_all;
+  src = ../src/noble/fdcr-bccr-certs_2026.08-1_all;
   nativeBuildInputs = [ openssl ];
   dontBuild = true;
   installPhase = ''

@@ -19,7 +19,7 @@
 }:
 
 let
-  src = ../src/ubuntu-noble + "/fdcr-scmanager_${version}_amd64";
+  src = ../src/noble + "/fdcr-scmanager_${version}_amd64";
   meta = {
     description = "Administrador gráfico SCManager de Idopte";
     homepage = "https://www.soportefirmadigital.com/";

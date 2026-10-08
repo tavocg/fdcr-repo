@@ -19,7 +19,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "fdcr-middleware-idopte";
   inherit version;
 
-  src = ../src/ubuntu-noble + "/${finalAttrs.pname}_${finalAttrs.version}_amd64";
+  src = ../src/noble + "/${finalAttrs.pname}_${finalAttrs.version}_amd64";
   dontBuild = true;
 
   nativeBuildInputs = [ autoPatchelfHook ];

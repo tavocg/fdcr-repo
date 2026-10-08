@@ -27,8 +27,8 @@ The build targets create separate repositories in `public/noble/`,
 
 | Source directory | Target |
 | --- | --- |
-| `src/ubuntu-noble/` | Ubuntu 24.04 LTS (Noble Numbat), built as APT packages |
-| `src/ubuntu-jammy/` | Ubuntu 22.04 LTS (Jammy Jellyfish), built as APT packages |
+| `src/noble/` | Ubuntu 24.04 LTS (Noble Numbat), built as APT packages |
+| `src/jammy/` | Ubuntu 22.04 LTS (Jammy Jellyfish), built as APT packages |
 | `src/fedora/` | Fedora, built as RPM packages |
 | `src/arch/` | Arch Linux rolling release, built as Pacman packages |
 
