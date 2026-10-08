@@ -1,7 +1,11 @@
 all: verify-checksums public
 
 .PHONY: public
-public: public/fdcr.asc public/noble public/jammy public/fedora public/arch
+public: public/install-repo.sh public/fdcr.asc public/noble public/jammy public/fedora public/arch
+
+public/install-repo.sh: scripts/install-repo.sh
+	@mkdir -p "$(@D)"
+	cp "$<" "$@"
 
 .PHONY: public/fdcr.asc
 public/fdcr.asc:
