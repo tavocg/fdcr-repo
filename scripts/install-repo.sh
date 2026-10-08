@@ -2,7 +2,7 @@
 
 set -eu
 
-if [ "$(id -u)" -neq 0 ]; then
+if [ "$(id -u)" -ne 0 ]; then
   echo "error: must be run as root" >&2
   exit 1
 fi
@@ -82,13 +82,14 @@ _get_release() {
     if [ -n "$r" ] && [ -f "$r" ] && [ -r "$r" ]; then
       #shellcheck disable=SC1090
       . "$r"
+      break
     fi
   done
 
   : "${RELEASE:="${ID}${VERSION_ID:-}"}"
 
-  case " $RELEASE " in
-  " $SUPPORTED ") echo "$RELEASE" ;;
+  case " $SUPPORTED " in
+  *" $RELEASE "*) echo "$RELEASE" ;;
   *)
     printf "error: unsupported release '%s', install manually\n\nsupported:\n  %s\n" \
       "$RELEASE" "$SUPPORTED" >&2
