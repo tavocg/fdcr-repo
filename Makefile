@@ -56,8 +56,16 @@ src/fedora/firmador-2.0.0-1:
 	chmod -R u+w "$@"
 
 .PHONY: public/arch
-public/arch: scripts/build-pacman.sh
+public/arch: scripts/build-pacman.sh src/arch/firmador-2.0.0-1
 	@GPG_KEY_ID="$$GPG_KEY_ID" ./$<
+
+.PHONY: src/arch/firmador-2.0.0-1
+src/arch/firmador-2.0.0-1:
+	@set -eu; \
+	output=$$(nix build --no-link --print-out-paths '$(NIX_FLAKE)#"firmador-arch-2.0.0-1"'); \
+	mkdir -p "$@"; \
+	cp -R --preserve=mode,timestamps "$$output/rootfs" "$@/"; \
+	chmod -R u+w "$@"
 
 .PHONY: verify-checksums
 verify-checksums: scripts/verify-checksums.sh

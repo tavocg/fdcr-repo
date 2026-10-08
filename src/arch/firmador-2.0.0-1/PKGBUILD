@@ -1,0 +1,13 @@
+pkgname=firmador
+pkgver=2.0.0
+pkgrel=1
+pkgdesc='Firmador Libre de documentos para Costa Rica'
+arch=('any')
+url='https://firmador.libre.cr/'
+license=('GPL-3.0-or-later')
+depends=('bash' 'jre21-openjdk' 'pcsclite')
+optdepends=('idopte-p11: middleware PKCS#11 para tarjetas Idopte')
+
+package() {
+  cp -a "$startdir/rootfs/." "$pkgdir/"
+}

@@ -77,7 +77,7 @@ Firma de documentos con Firmador Libre.
 
 | Distro       | Empaquetado | Probado |
 |--------------|-------------|---------|
-| Arch Linux   |             |         |
+| Arch Linux   | arch        |         |
 | Fedora 45    | fedora      |         |
 | Fedora 44    | fedora      |         |
 | Fedora 43    | fedora      |         |

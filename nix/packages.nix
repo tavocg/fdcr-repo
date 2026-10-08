@@ -33,6 +33,10 @@ let
       firmador = packages."firmador-2.0.0";
     };
 
+    "firmador-arch-2.0.0-1" = pkgs.callPackage ./packages/firmador/arch.nix {
+      firmador = packages."firmador-2.0.0";
+    };
+
     firmador = packages.firmador_2_0;
 
     "idopte-p11-6.23.50.5-1" = pkgs.callPackage ./idopte-p11.nix {
