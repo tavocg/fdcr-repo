@@ -1,4 +1,8 @@
-{ lib, stdenvNoCC, openssl }:
+{
+  lib,
+  stdenvNoCC,
+  openssl,
+}:
 stdenvNoCC.mkDerivation {
   pname = "fdcr-bccr-certs";
   version = "2026.08-1";
@@ -7,10 +11,49 @@ stdenvNoCC.mkDerivation {
   dontBuild = true;
   installPhase = ''
     runHook preInstall
-    mkdir -p "$out/share/fdcr-bccr-certs" "$out/etc/ssl/certs"
-    cp -r usr/share/fdcr-bccr-certs/originals "$out/share/fdcr-bccr-certs/"
-    sh usr/lib/fdcr-bccr-certs/build-pem \
-      usr/share/fdcr-bccr-certs/originals "$out/share/fdcr-bccr-certs/pem"
+    source_dir=usr/share/fdcr-bccr-certs/originals
+    output="$out/share/fdcr-bccr-certs/pem"
+    export LC_ALL=C
+    mkdir -p "$out/share/fdcr-bccr-certs" "$out/etc/ssl/certs" \
+      "$output/certificates" "$output/roots"
+    cp -r "$source_dir" "$out/share/fdcr-bccr-certs/"
+    : > "$output/bundle.pem"
+    : > "$output/ca-bundle.pem"
+    : > "$output/roots.pem"
+    found=false
+    for certificate in "$source_dir"/*; do
+      [ -f "$certificate" ] || continue
+      found=true
+      temporary="$output/certificate.tmp"
+      if ! openssl x509 -inform PEM -in "$certificate" -out "$temporary" 2>/dev/null; then
+        if ! openssl x509 -inform DER -in "$certificate" -out "$temporary"; then
+          echo "error: cannot parse certificate $certificate" >&2
+          exit 1
+        fi
+      fi
+      fingerprint=$(openssl x509 -in "$temporary" -noout -fingerprint -sha256)
+      fingerprint=$(printf '%s' "''${fingerprint#*=}" | tr -d ':')
+      pem="$output/certificates/$fingerprint.pem"
+      if [ -f "$pem" ]; then
+        rm -f "$temporary"
+        continue
+      fi
+      mv "$temporary" "$pem"
+      cat "$pem" >> "$output/bundle.pem"
+      constraints=$(openssl x509 -in "$pem" -noout -ext basicConstraints)
+      case "$constraints" in
+        *CA:TRUE*)
+          cat "$pem" >> "$output/ca-bundle.pem"
+          subject=$(openssl x509 -in "$pem" -noout -subject -nameopt RFC2253)
+          issuer=$(openssl x509 -in "$pem" -noout -issuer -nameopt RFC2253)
+          if [ "''${subject#subject=}" = "''${issuer#issuer=}" ]; then
+            cp "$pem" "$output/roots/$fingerprint.crt"
+            cat "$pem" >> "$output/roots.pem"
+          fi
+          ;;
+      esac
+    done
+    [ "$found" = true ] && [ -s "$output/roots.pem" ]
     ln -s "$out/share/fdcr-bccr-certs/pem/roots.pem" "$out/etc/ssl/certs/fdcr-roots.pem"
     runHook postInstall
   '';

@@ -2,4 +2,3 @@
 ./DEBIAN/control
 ./DEBIAN/postinst
 ./DEBIAN/postrm
-./usr/lib/fdcr-bccr-certs/build-pem
