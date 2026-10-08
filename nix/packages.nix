@@ -2,6 +2,7 @@
 
 let
   packages = {
+    "idopte-p11-noble" = pkgs.callPackage ./packages/idopte-p11/noble.nix { };
     "libxml2-idopte-compat-noble" = pkgs.callPackage ./packages/libxml2-idopte-compat/noble.nix { };
     bccr-certs = pkgs.callPackage ./bccr-certs.nix { };
     "bccr-certs-fedora-2026.08-1" = pkgs.callPackage ./packages/bccr-certs/fedora.nix { };
