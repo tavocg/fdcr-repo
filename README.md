@@ -10,7 +10,7 @@ Repositorio de dependencias para Firma Digital en Costa Rica
 ## Instalación
 
 ```sh
-curl -fsSL https://tavocg.github.io/fdcr-repo/install-repo.sh | sudo sh
+curl -fsSL https://tavocg.github.io/fdcr-repo/install.sh | sudo sh
 ```
 
 Luego, instale el paquete con el gestor de tu distribución. Por ejemplo, en Ubuntu:

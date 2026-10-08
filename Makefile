@@ -3,9 +3,9 @@ all: verify-checksums public
 NIX_FLAKE ?= .
 
 .PHONY: public
-public: public/install-repo.sh public/fdcr.asc public/noble public/jammy public/fedora public/arch
+public: public/install.sh public/fdcr.asc public/noble public/jammy public/fedora public/arch
 
-public/install-repo.sh: scripts/install-repo.sh
+public/install.sh: scripts/install-repo.sh
 	@mkdir -p "$(@D)"
 	cp "$<" "$@"
 
