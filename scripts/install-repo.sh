@@ -87,6 +87,7 @@ _get_release() {
   done
 
   : "${RELEASE:="${ID}${VERSION_ID:-}"}"
+  RELEASE="$(printf '%s' "$RELEASE" | tr -d '.')"
 
   case " $SUPPORTED " in
   *" $RELEASE "*) echo "$RELEASE" ;;
