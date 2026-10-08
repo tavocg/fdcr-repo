@@ -22,11 +22,6 @@ GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-dnf.sh
 GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-pacman.sh
 ```
 
-The `ubuntu-noble` and `ubuntu-jammy` Make targets call the same APT
-builder with release-specific source trees and repository metadata. Additional
-Ubuntu releases can use that builder with their own source directory, suite,
-and codename.
-
 The build targets create separate repositories in `public/noble/`,
 `public/jammy/`, `public/fedora/`, and `public/arch/`.
 
