@@ -60,7 +60,7 @@ _install_arch() {
   tmp="$(mktemp)"
   curl -fsSLo "$tmp" "$REPO_ROOT/$REPO_KEY"
   pacman-key --add "$tmp"
-  pacman-key --lsign-key "$(gpg --show-keys --with-colons "$tmp" | sed '/fpr/!d;s/:$//;s/.*://')"
+  pacman-key --lsign-key "$(gpg --show-keys --with-colons "$tmp" | sed -n '/^fpr:/ { s/:$//; s/.*://; p; q; }')"
   rm -f "$tmp"
 
   mkdir -p "/etc/pacman.d/repos.d"
