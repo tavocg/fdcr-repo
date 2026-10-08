@@ -1,0 +1,11 @@
+post_install() {
+  /usr/libexec/bccr-certs/install /usr/share/ca-certificates/trust-source/anchors arch
+}
+
+post_upgrade() {
+  /usr/libexec/bccr-certs/install /usr/share/ca-certificates/trust-source/anchors arch
+}
+
+pre_remove() {
+  /usr/libexec/bccr-certs/remove /usr/share/ca-certificates/trust-source/anchors arch
+}

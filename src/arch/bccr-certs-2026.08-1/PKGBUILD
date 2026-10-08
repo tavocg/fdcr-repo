@@ -1,0 +1,13 @@
+pkgname=bccr-certs
+pkgver=2026.08
+pkgrel=1
+pkgdesc='Certificados de la jerarquía nacional de Firma Digital de Costa Rica'
+arch=('any')
+url='https://www.soportefirmadigital.com/'
+license=('custom')
+depends=('ca-certificates-utils' 'openssl')
+install=bccr-certs.install
+
+package() {
+  cp -a "$startdir/rootfs/." "$pkgdir/"
+}

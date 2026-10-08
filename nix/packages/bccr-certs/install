@@ -1,0 +1,67 @@
+#!/bin/sh
+set -eu
+
+anchors=${1:?usage: install ANCHORS_DIR fedora|arch}
+platform=${2:?usage: install ANCHORS_DIR fedora|arch}
+source_dir=/usr/share/bccr-certs/originals
+state=/var/lib/bccr-certs
+staging=$(mktemp -d)
+trap 'rm -rf "$staging"' EXIT HUP INT TERM
+export LC_ALL=C
+mkdir -p "$staging/certificates" "$staging/roots"
+: > "$staging/bundle.pem"
+: > "$staging/ca-bundle.pem"
+: > "$staging/roots.pem"
+found=false
+
+for certificate in "$source_dir"/*; do
+  [ -f "$certificate" ] || continue
+  found=true
+  temporary="$staging/certificate.tmp"
+  if ! openssl x509 -inform PEM -in "$certificate" -out "$temporary" 2>/dev/null; then
+    if ! openssl x509 -inform DER -in "$certificate" -out "$temporary"; then
+      echo "error: cannot parse certificate $certificate" >&2
+      exit 1
+    fi
+  fi
+  fingerprint=$(openssl x509 -in "$temporary" -noout -fingerprint -sha256)
+  fingerprint=$(printf '%s' "${fingerprint#*=}" | tr -d ':')
+  pem="$staging/certificates/$fingerprint.pem"
+  if [ -f "$pem" ]; then
+    rm -f "$temporary"
+    continue
+  fi
+  mv "$temporary" "$pem"
+  cat "$pem" >> "$staging/bundle.pem"
+  constraints=$(openssl x509 -in "$pem" -noout -ext basicConstraints)
+  case "$constraints" in
+    *CA:TRUE*)
+      cat "$pem" >> "$staging/ca-bundle.pem"
+      subject=$(openssl x509 -in "$pem" -noout -subject -nameopt RFC2253)
+      issuer=$(openssl x509 -in "$pem" -noout -issuer -nameopt RFC2253)
+      if [ "${subject#subject=}" = "${issuer#issuer=}" ]; then
+        cp "$pem" "$staging/roots/$fingerprint.crt"
+        cat "$pem" >> "$staging/roots.pem"
+      fi
+      ;;
+  esac
+done
+
+if [ "$found" != true ] || [ ! -s "$staging/roots.pem" ]; then
+  echo "error: no self-signed CA certificates found in $source_dir" >&2
+  exit 1
+fi
+
+install -d -m 755 "$state/certificates" "$state/roots" "$anchors"
+rm -f "$anchors"/bccr-*.crt "$state/certificates"/*.pem "$state/roots"/*.crt
+install -m 644 "$staging"/certificates/*.pem "$state/certificates/"
+install -m 644 "$staging"/roots/*.crt "$state/roots/"
+install -m 644 "$staging"/*.pem "$state/"
+for root in "$staging"/roots/*.crt; do
+  install -m 644 "$root" "$anchors/bccr-$(basename "$root")"
+done
+
+case "$platform" in
+  fedora|arch) update-ca-trust extract ;;
+  *) echo "error: unsupported trust store: $platform" >&2; exit 2 ;;
+esac

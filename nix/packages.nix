@@ -3,6 +3,8 @@
 let
   packages = {
     bccr-certs = pkgs.callPackage ./bccr-certs.nix { };
+    "bccr-certs-fedora-2026.08-1" = pkgs.callPackage ./packages/bccr-certs/fedora.nix { };
+    "bccr-certs-arch-2026.08-1" = pkgs.callPackage ./packages/bccr-certs/arch.nix { };
     "bccr-gaudi-29.0-1" = pkgs.callPackage ./bccr-gaudi.nix { };
     bccr-gaudi = packages."bccr-gaudi-29.0-1";
     firmador_1_9 = pkgs.callPackage ./packages/firmador/default.nix {
