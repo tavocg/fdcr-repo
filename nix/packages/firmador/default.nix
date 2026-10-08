@@ -67,7 +67,7 @@ stdenvNoCC.mkDerivation {
     mkdir -p "$out/bin" "$out/share"
     ln -s ${jar}/share/firmador "$out/share/firmador"
     ln -s ${jar}/share/icons "$out/share/icons"
-    substitute ${./firmador.sh} "$out/bin/firmador" \
+    substitute ${./launcher.sh} "$out/bin/firmador" \
       --subst-var-by shell ${stdenvNoCC.shell} \
       --subst-var-by java ${lib.getExe' jre "java"} \
       --subst-var-by jar ${jar}/share/firmador/firmador.jar

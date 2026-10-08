@@ -1,5 +1,7 @@
 all: verify-checksums public
 
+NIX_FLAKE ?= .
+
 .PHONY: public
 public: public/install-repo.sh public/fdcr.asc public/noble public/jammy public/fedora public/arch
 
@@ -18,8 +20,16 @@ public/fdcr.asc:
 	fi
 
 .PHONY: public/noble
-public/noble: scripts/build-apt.sh
+public/noble: scripts/build-apt.sh src/ubuntu-noble/firmador_2.0.0-1_all
 	@GPG_KEY_ID="$$GPG_KEY_ID" SOURCE=./src/ubuntu-noble CODENAME=noble PUBLIC=./public/noble ./scripts/build-apt.sh
+
+.PHONY: src/ubuntu-noble/firmador_2.0.0-1_all
+src/ubuntu-noble/firmador_2.0.0-1_all:
+	@set -eu; \
+	output=$$(nix build --no-link --print-out-paths '$(NIX_FLAKE)#"firmador-noble-2.0.0-1"'); \
+	mkdir -p "$@"; \
+	cp -R --preserve=mode,timestamps "$$output/." "$@/"; \
+	chmod -R u+w "$@"
 
 .PHONY: public/jammy
 public/jammy: scripts/build-apt.sh
