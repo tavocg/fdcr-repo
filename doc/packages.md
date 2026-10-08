@@ -29,7 +29,6 @@ Interfaz gráfica de administración de Idopte.
 | Arch Linux   |             |         |
 | Fedora 45    |             |         |
 | Fedora 44    |             |         |
-| Fedora 43    |             |         |
 | Ubuntu 26.04 | noble       |         |
 | Ubuntu 24.04 | noble       |         |
 | Ubuntu 22.04 | jammy       |         |
@@ -46,7 +45,6 @@ Agente GAUDI del BCCR con Java/JavaFX incluido.
 | Arch Linux   | arch        |         |
 | Fedora 45    | fedora      |         |
 | Fedora 44    | fedora      |         |
-| Fedora 43    | fedora      |         |
 | Ubuntu 26.04 | noble       |         |
 | Ubuntu 24.04 | noble       |         |
 | Ubuntu 22.04 | jammy       |         |
@@ -63,7 +61,6 @@ Certificados del proveedor y conjuntos PEM.
 | Arch Linux   | arch        |         |
 | Fedora 45    | fedora      |         |
 | Fedora 44    | fedora      |         |
-| Fedora 43    | fedora      |         |
 | Ubuntu 26.04 | noble       |         |
 | Ubuntu 24.04 | noble       |         |
 | Ubuntu 22.04 | jammy       |         |
@@ -80,7 +77,6 @@ Firma de documentos con Firmador Libre.
 | Arch Linux   | arch        |         |
 | Fedora 45    | fedora      |         |
 | Fedora 44    | fedora      |         |
-| Fedora 43    | fedora      |         |
 | Ubuntu 26.04 | noble       |         |
 | Ubuntu 24.04 | noble       |         |
 | Ubuntu 22.04 | jammy       |         |
