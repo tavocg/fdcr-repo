@@ -37,7 +37,7 @@ _install_ubuntu2204() {
 
 SUPPORTED="${SUPPORTED:+$SUPPORTED }fedora44"
 _install_fedora44() {
-  tmp="/tmp/$REPO_KEY"
+  tmp="$(mktemp)"
 
   curl -fsSLo "$tmp" "$REPO_ROOT/$REPO_KEY"
   install -Dm644 "$tmp" "/etc/pki/rpm-gpg/$REPO_KEY"
@@ -57,7 +57,7 @@ INI
 
 SUPPORTED="${SUPPORTED:+$SUPPORTED }arch"
 _install_arch() {
-  tmp="/tmp/$REPO_KEY"
+  tmp="$(mktemp)"
   curl -fsSLo "$tmp" "$REPO_ROOT/$REPO_KEY"
   pacman-key --add "$tmp"
   pacman-key --lsign-key "$(gpg --show-keys --with-colons "$tmp" | sed '/fpr/!d;s/:$//;s/.*://')"
@@ -71,7 +71,7 @@ Server = https://tavocg.github.io/fdcr-repo/arch/
 INI
 
   if ! grep -Eq '^ *Include *= */etc/pacman\.d/repos\.d/\*\.conf *(#.*)?$' /etc/pacman.conf; then
-    printf 'Include = /etc/pacman.d/repos.d/*.conf' >>/etc/pacman.conf
+    printf '\nInclude = /etc/pacman.d/repos.d/*.conf\n' >>/etc/pacman.conf
   fi
 
   pacman -Sy
