@@ -1,0 +1,11 @@
+Package: idopte-scmanager
+Version: 6.23.50.5-1
+Architecture: amd64
+Maintainer: Soporte Firma Digital
+Section: utils
+Priority: optional
+Depends: idopte-p11 (= 6.23.50.5-1), python3, python3-requests, zenity, xdg-utils, xdg-user-dirs
+Recommends: python3-nautilus
+Homepage: https://www.soportefirmadigital.com/
+Description: Administrador gráfico SCManager de Idopte
+ Interfaz gráfica e integración PKCS#7 para el middleware Idopte.

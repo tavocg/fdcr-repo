@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -eu
+
+case "${1:-}" in
+remove|purge)
+  rm -f /usr/share/applications/SCManager.desktop
+  rm -f /etc/xdg/autostart/SCManager.desktop
+  ;;
+esac
