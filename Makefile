@@ -20,8 +20,28 @@ public/fdcr.asc:
 	fi
 
 .PHONY: public/noble
-public/noble: scripts/build-apt.sh src/noble/firmador_2.0.0-1_all
-	@GPG_KEY_ID="$$GPG_KEY_ID" SOURCE=./src/noble CODENAME=noble PUBLIC=./public/noble ./scripts/build-apt.sh
+public/noble: scripts/build-apt.sh src/noble/firmador_2.0.0-1_all src/noble/libxml2-idopte-compat_2.9.14+deb13u3-1_amd64
+	@set -eu; \
+	output=$$(nix build --no-link --print-out-paths '$(NIX_FLAKE)#idopte-p11-noble'); \
+	staging_dir=$$(mktemp -d "$${TMPDIR:-/tmp}/fdcr-noble.XXXXXX"); \
+	trap 'rm -rf "$$staging_dir"' EXIT HUP INT TERM; \
+	for pkg_dir in "$$PWD"/src/noble/*; do \
+		[ -d "$$pkg_dir" ] || continue; \
+		case "$${pkg_dir##*/}" in idopte-p11_*) continue ;; esac; \
+		ln -s "$$pkg_dir" "$$staging_dir/$${pkg_dir##*/}"; \
+	done; \
+	mkdir -p "$$staging_dir/idopte-p11_6.23.50.5-1_amd64"; \
+	cp -R --preserve=mode,timestamps "$$output/." "$$staging_dir/idopte-p11_6.23.50.5-1_amd64/"; \
+	chmod -R u+w "$$staging_dir/idopte-p11_6.23.50.5-1_amd64"; \
+	GPG_KEY_ID="$$GPG_KEY_ID" SOURCE="$$staging_dir" CODENAME=noble PUBLIC=./public/noble ./scripts/build-apt.sh
+
+.PHONY: src/noble/libxml2-idopte-compat_2.9.14+deb13u3-1_amd64
+src/noble/libxml2-idopte-compat_2.9.14+deb13u3-1_amd64:
+	@set -eu; \
+	output=$$(nix build --no-link --print-out-paths '$(NIX_FLAKE)#libxml2-idopte-compat-noble'); \
+	mkdir -p "$@"; \
+	cp -R --preserve=mode,timestamps "$$output/." "$@/"; \
+	chmod -R u+w "$@"
 
 .PHONY: src/noble/firmador_2.0.0-1_all
 src/noble/firmador_2.0.0-1_all:
