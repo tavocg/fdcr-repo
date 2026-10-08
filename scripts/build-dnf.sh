@@ -8,6 +8,8 @@ fi
 
 set -eu
 
+. "$(dirname "$0")/package-build.sh"
+
 : "${SOURCE:=./src/fedora}"
 : "${PUBLIC:=./public/fedora}"
 : "${GPG_KEY_ID:=}"
@@ -16,6 +18,11 @@ set -eu
 # Argument: package source directory. Copies built RPMs into $PUBLIC.
 build_rpm_package() (
   pkg_dir="$1"
+  topdir="$(mktemp -d "${TMPDIR:-/tmp}/build-dnf.XXXXXX")"
+  trap 'rm -rf "$topdir"' EXIT HUP INT TERM
+  mkdir -p "$topdir/package"
+  prepare_package_tree "$pkg_dir" "$topdir/package"
+  pkg_dir="$topdir/package"
   spec_file=""
 
   for candidate in "$pkg_dir"/*.spec; do
@@ -34,8 +41,6 @@ build_rpm_package() (
     return 1
   fi
 
-  topdir="$(mktemp -d "${TMPDIR:-/tmp}/build-dnf.XXXXXX")"
-  trap 'rm -rf "$topdir"' EXIT HUP INT TERM
   mkdir -p "$topdir/BUILD" "$topdir/BUILDROOT" "$topdir/RPMS" "$topdir/SOURCES" "$topdir/SPECS" "$topdir/SRPMS" "$topdir/rpmdb" "$topdir/tmp"
   tar -C "$pkg_dir/rootfs" -czf "$topdir/SOURCES/payload.tar.gz" .
 
@@ -67,6 +72,10 @@ build_rpm_packages() {
   for pkg_dir in "$SOURCE"/*; do
     [ -d "$pkg_dir" ] || continue
     found_package=true
+    if skip_nix_package "$pkg_dir"; then
+      remove_skipped_artifacts "$pkg_dir" rpm "$PUBLIC"
+      continue
+    fi
     build_rpm_package "$pkg_dir"
   done
 
@@ -119,6 +128,8 @@ gen_rpm_repository() {
     gpg --batch --yes --local-user "$GPG_KEY_ID" --armor --detach-sign \
       --output "$PUBLIC/repodata/repomd.xml.asc" \
       "$PUBLIC/repodata/repomd.xml"
+  else
+    rm -f "$PUBLIC/repodata/repomd.xml.asc"
   fi
 }
 

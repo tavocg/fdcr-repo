@@ -9,6 +9,8 @@ fi
 
 set -eu
 
+. "$(dirname "$0")/package-build.sh"
+
 : "${ORIGIN:=Soporte Firma Digital}"
 : "${LABEL:=Repositorio APT de Soporte Firma Digital}"
 : "${CODENAME:=stable}"
@@ -30,6 +32,7 @@ DIST="$RELEASE_DIR/$REPO_COMPONENT"   # ./public/noble/dists/noble/main
 # Argument: package directory (for example, /path/to/firmador_1.0.0_amd64).
 # Output: writes the .deb file into $POOL; returns nonzero on failure.
 build_deb_package() (
+  set -eu
   pkg_dir="$1"
 
   if ! [ -d "$pkg_dir" ]; then
@@ -40,7 +43,7 @@ build_deb_package() (
   # package it would otherwise conflict at /.exclude with the middleware.
   staging_dir=$(mktemp -d "${TMPDIR:-/tmp}/build-apt.XXXXXX")
   trap 'rm -rf "$staging_dir"' EXIT HUP INT TERM
-  cp -a "$pkg_dir/." "$staging_dir/"
+  prepare_package_tree "$pkg_dir" "$staging_dir"
   rm -f "$staging_dir/.exclude"
   dpkg-deb --root-owner-group --build "$staging_dir" "$POOL" >&2
 )
@@ -69,6 +72,7 @@ append_once() {
 # Output: unique, whitespace-separated architecture names on stdout.
 # Returns nonzero if a package build fails or no package directories exist.
 build_deb_packages() {
+  set -e
   arches=""
   found_package=false
 
@@ -76,11 +80,16 @@ build_deb_packages() {
     [ -d "$pkg_dir" ] || continue
     found_package=true
 
-    build_deb_package "$pkg_dir" || return "$?"
-
     arch="${pkg_dir##*/}"
     arch="${arch##*_}"
     arches="$(append_once "$arches" "$arch")"
+    if skip_nix_package "$pkg_dir"; then
+      remove_skipped_artifacts "$pkg_dir" deb "$POOL"
+      continue
+    fi
+    # Do not invoke this function in an ||/if condition: that disables errexit
+    # inside it and could hide a failed package preparation.
+    build_deb_package "$pkg_dir"
   done
 
   if [ "$found_package" = false ]; then
@@ -136,6 +145,8 @@ gen_release() {
 
   if [ -n "$GPG_KEY_ID" ]; then
     sign_release
+  else
+    rm -f "$RELEASE_DIR/InRelease" "$RELEASE_DIR/Release.gpg"
   fi
 }
 

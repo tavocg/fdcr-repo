@@ -1,5 +1,5 @@
 #!/bin/sh
-# External programs required: makepkg and repo-add.
+# External programs required: makepkg, repo-add, bsdtar, tar, sed, cp, and mktemp.
 # Optional: gpg, required only when GPG_KEY_ID is set.
 
 if [ -r .env ]; then
@@ -7,6 +7,8 @@ if [ -r .env ]; then
 fi
 
 set -eu
+
+. "$(dirname "$0")/package-build.sh"
 
 : "${SOURCE:=./src/arch}"
 : "${PUBLIC:=./public/arch}"
@@ -35,7 +37,10 @@ build_pacman_package() (
   pkg_dir="${pkgbuild%/*}"
   pkg_dir=$(CDPATH= cd "$pkg_dir" && pwd)
 
-  cd "$pkg_dir"
+  staging_dir=$(mktemp -d "${TMPDIR:-/tmp}/build-pacman.XXXXXX")
+  trap 'rm -rf "$staging_dir"' EXIT HUP INT TERM
+  prepare_package_tree "$pkg_dir" "$staging_dir"
+  cd "$staging_dir"
   run_makepkg --clean --force
 )
 
@@ -47,6 +52,10 @@ build_pacman_packages() (
   for pkgbuild in "$SOURCE"/*/PKGBUILD; do
     [ -f "$pkgbuild" ] || continue
     found_package=true
+    if skip_nix_package "${pkgbuild%/*}"; then
+      remove_skipped_artifacts "${pkgbuild%/*}" pacman "$PUBLIC"
+      continue
+    fi
     build_pacman_package "$pkgbuild"
   done
 
@@ -58,6 +67,9 @@ build_pacman_packages() (
 
 # Create and sign the repository database from all built packages.
 gen_pacman_repository() {
+  # repo-add updates an existing database, so recreate it to remove entries for
+  # omitted packages, including old signatures and database backups.
+  rm -f "$PUBLIC"/fdcr.db "$PUBLIC"/fdcr.db.* "$PUBLIC"/fdcr.files "$PUBLIC"/fdcr.files.*
   set --
   for package_file in "$PUBLIC"/*.pkg.tar.*; do
     [ -f "$package_file" ] || continue
@@ -70,8 +82,16 @@ gen_pacman_repository() {
   done
 
   if [ "$#" -eq 0 ]; then
-    printf 'No Pacman packages found in %s\n' "$PUBLIC" >&2
-    return 1
+    for kind in db files; do
+      tar -czf "$PUBLIC/fdcr.$kind.tar.gz" --files-from /dev/null
+      ln -s "fdcr.$kind.tar.gz" "$PUBLIC/fdcr.$kind"
+      if [ -n "$GPG_KEY_ID" ]; then
+        gpg --batch --yes --local-user "$GPG_KEY_ID" --detach-sign \
+          --output "$PUBLIC/fdcr.$kind.tar.gz.sig" "$PUBLIC/fdcr.$kind.tar.gz"
+        ln -s "fdcr.$kind.tar.gz.sig" "$PUBLIC/fdcr.$kind.sig"
+      fi
+    done
+    return 0
   fi
 
   if [ -n "$GPG_KEY_ID" ]; then
