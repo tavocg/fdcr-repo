@@ -45,6 +45,7 @@ with pkgs; [
 
   # Binary manipulation
   binutils
+  patchelf
 
   # Source/build helpers
   git
