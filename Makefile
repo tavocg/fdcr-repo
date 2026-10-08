@@ -32,13 +32,21 @@ src/noble/firmador_2.0.0-1_all:
 	chmod -R u+w "$@"
 
 .PHONY: public/jammy
-public/jammy: scripts/build-apt.sh src/jammy/firmador_2.0.0-1_all
+public/jammy: scripts/build-apt.sh src/jammy/firmador_2.0.0-1_all src/jammy/bccr-certs_2026.08-1_all
 	@GPG_KEY_ID="$$GPG_KEY_ID" SOURCE=./src/jammy CODENAME=jammy PUBLIC=./public/jammy ./scripts/build-apt.sh
 
 .PHONY: src/jammy/firmador_2.0.0-1_all
 src/jammy/firmador_2.0.0-1_all:
 	@set -eu; \
 	output=$$(nix build --no-link --print-out-paths '$(NIX_FLAKE)#"firmador-jammy-2.0.0-1"'); \
+	mkdir -p "$@"; \
+	cp -R --preserve=mode,timestamps "$$output/." "$@/"; \
+	chmod -R u+w "$@"
+
+.PHONY: src/jammy/bccr-certs_2026.08-1_all
+src/jammy/bccr-certs_2026.08-1_all:
+	@set -eu; \
+	output=$$(nix build --no-link --print-out-paths '$(NIX_FLAKE)#"bccr-certs-jammy-2026.08-1"'); \
 	mkdir -p "$@"; \
 	cp -R --preserve=mode,timestamps "$$output/." "$@/"; \
 	chmod -R u+w "$@"

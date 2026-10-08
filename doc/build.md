@@ -13,13 +13,11 @@ The source ZIPs are listed in `.gitattributes`. Add new large files with
 `git lfs track --filename PATH` before staging them.
 Commit `.gitattributes` along with the files.
 
-Build all repositories with the signing key available in your GPG keyring:
+Build all repositories with the signing key available in your GPG keyring. The
+Make targets generate package trees with Nix before building the repositories:
 
 ```sh
-GPG_KEY_ID="YOUR_SIGNING_KEY_ID"
-GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-apt.sh
-GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-dnf.sh
-GPG_KEY_ID="$GPG_KEY_ID" ./scripts/build-pacman.sh
+GPG_KEY_ID="YOUR_SIGNING_KEY_ID" make all
 ```
 
 The build targets create separate repositories in `public/noble/`,
