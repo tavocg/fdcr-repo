@@ -48,7 +48,7 @@ Repositorio de dependencias para Firma Digital en Costa Rica
   baseurl=https://tavocg.github.io/fdcr-repo/fedora/
   enabled=1
   gpgcheck=1
-  repo_gpgcheck=1
+  repo_gpgcheck=0
   gpgkey=file:///etc/pki/rpm-gpg/fdcr.asc
   INI
   ```
