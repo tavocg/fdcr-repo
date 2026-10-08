@@ -4,14 +4,22 @@ set -eu
 
 case "${1:-}" in
 configure)
-  source_file=/usr/share/applications/SCManager.desktop
-  target_file=/etc/xdg/autostart/SCManager.desktop
+  desktop_content=/tmp/fdcr-scmanager.desktop.$$
+  trap 'rm -f "$desktop_content"' EXIT HUP INT TERM
+  cat >"$desktop_content" <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=SCManager
+Comment=Administrador de tarjetas Idopte
+Exec=/usr/lib/SCMiddleware/SCManager
+Icon=/usr/share/SCMiddleware/application.png
+Terminal=false
+Categories=Utility;Security;
+EOF
 
-  if [ ! -f "$source_file" ]; then
-    printf 'Required desktop file not found: %s\n' "$source_file" >&2
-    exit 1
-  fi
-
-  install -D -m 0644 "$source_file" "$target_file"
+  install -D -m 0644 "$desktop_content" /usr/share/applications/SCManager.desktop
+  install -D -m 0644 "$desktop_content" /etc/xdg/autostart/SCManager.desktop
+  rm -f "$desktop_content"
+  trap - EXIT HUP INT TERM
   ;;
 esac

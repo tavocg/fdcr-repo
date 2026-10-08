@@ -1,3 +1,5 @@
 ./.exclude
 ./DEBIAN/control
 ./DEBIAN/conffiles
+./DEBIAN/postinst
+./DEBIAN/postrm

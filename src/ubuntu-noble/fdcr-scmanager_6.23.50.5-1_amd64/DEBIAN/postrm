@@ -4,7 +4,7 @@ set -eu
 
 case "${1:-}" in
 remove|purge)
-  target_file=/etc/xdg/autostart/SCManager.desktop
-  rm -f "$target_file"
+  rm -f /usr/share/applications/SCManager.desktop
+  rm -f /etc/xdg/autostart/SCManager.desktop
   ;;
 esac
