@@ -44,8 +44,16 @@ src/jammy/firmador_2.0.0-1_all:
 	chmod -R u+w "$@"
 
 .PHONY: public/fedora
-public/fedora: scripts/build-dnf.sh
+public/fedora: scripts/build-dnf.sh src/fedora/firmador-2.0.0-1
 	@GPG_KEY_ID="$$GPG_KEY_ID" ./$<
+
+.PHONY: src/fedora/firmador-2.0.0-1
+src/fedora/firmador-2.0.0-1:
+	@set -eu; \
+	output=$$(nix build --no-link --print-out-paths '$(NIX_FLAKE)#"firmador-fedora-2.0.0-1"'); \
+	mkdir -p "$@"; \
+	cp -R --preserve=mode,timestamps "$$output/rootfs" "$@/"; \
+	chmod -R u+w "$@"
 
 .PHONY: public/arch
 public/arch: scripts/build-pacman.sh
