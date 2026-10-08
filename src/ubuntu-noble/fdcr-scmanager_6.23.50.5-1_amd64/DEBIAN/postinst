@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -eu
+
+case "${1:-}" in
+configure)
+  source_file=/usr/share/applications/SCManager.desktop
+  target_file=/etc/xdg/autostart/SCManager.desktop
+
+  if [ ! -f "$source_file" ]; then
+    printf 'Required desktop file not found: %s\n' "$source_file" >&2
+    exit 1
+  fi
+
+  install -D -m 0644 "$source_file" "$target_file"
+  ;;
+esac

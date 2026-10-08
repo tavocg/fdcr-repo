@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=SCManager
-Comment=Administrador de tarjetas Idopte
-Exec=/usr/lib/SCMiddleware/SCManager
-Icon=/usr/share/SCMiddleware/application.png
-Terminal=false
-Categories=Utility;Security;
