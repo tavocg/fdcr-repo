@@ -1,6 +1,6 @@
 #!/bin/sh
 # External programs required: rpm, rpmbuild, createrepo_c, tar, cp, and mktemp.
-# Optional: gpg, required only when GPG_KEY_ID is set.
+# Optional: gpg, rpmsign, and rpmkeys, required when GPG_KEY_ID is set.
 
 if [ -r .env ]; then
   . ./.env
@@ -76,6 +76,40 @@ build_rpm_packages() {
   fi
 }
 
+# Sign and verify every RPM being published, including any retained packages.
+# Use a temporary RPM database containing only the configured public key.
+sign_rpm_packages() (
+  [ -n "$GPG_KEY_ID" ] || return 0
+
+  signing_dir="$(mktemp -d "${TMPDIR:-/tmp}/sign-dnf.XXXXXX")"
+  trap 'rm -rf "$signing_dir"' EXIT HUP INT TERM
+  gpg --batch --yes --armor --output "$signing_dir/key.asc" --export "$GPG_KEY_ID"
+  rpmkeys --dbpath "$signing_dir/rpmdb" --import "$signing_dir/key.asc"
+
+  for rpm_file in "$PUBLIC"/*.rpm; do
+    [ -f "$rpm_file" ] || continue
+    rpmsign --define "_gpg_name $GPG_KEY_ID" \
+      --define "__gpg $(command -v gpg)" \
+      --define "_gpg_digest_algo sha256" \
+      --define "_gpg_sign_cmd_extra_args --batch --no-tty --pinentry-mode error" \
+      --addsign "$rpm_file"
+    LC_ALL=C rpmkeys --dbpath "$signing_dir/rpmdb" --checksig --verbose \
+      "$rpm_file" > "$signing_dir/verification.txt"
+    cat "$signing_dir/verification.txt"
+    # A successful checksum check alone also accepts unsigned RPMs.
+    verified_signature=false
+    while IFS= read -r verification_line; do
+      case "$verification_line" in
+        *Signature*': OK') verified_signature=true ;;
+      esac
+    done < "$signing_dir/verification.txt"
+    if [ "$verified_signature" = false ]; then
+      printf 'No verified RPM signature for %s\n' "$rpm_file" >&2
+      return 1
+    fi
+  done
+)
+
 # Generate repository metadata and optionally sign repomd.xml.
 # Uses createrepo_c; GPG_KEY_ID enables the detached metadata signature.
 gen_rpm_repository() {
@@ -93,6 +127,7 @@ gen_rpm_repository() {
 main() {
   mkdir -p "$PUBLIC"
   build_rpm_packages
+  sign_rpm_packages
   gen_rpm_repository
 }
 
