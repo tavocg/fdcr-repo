@@ -2,8 +2,8 @@
 
 set -eu
 
-if [ "$USER" != "root" ]; then
-  echo "error: must be run as root"
+if [ "$(id -u)" -neq 0 ]; then
+  echo "error: must be run as root" >&2
   exit 1
 fi
 
