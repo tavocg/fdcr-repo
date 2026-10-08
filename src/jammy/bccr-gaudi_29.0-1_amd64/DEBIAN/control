@@ -1,0 +1,13 @@
+Package: bccr-gaudi
+Version: 29.0-1
+Architecture: amd64
+Maintainer: Soporte Firma Digital
+Section: java
+Priority: optional
+Provides: agente-gaudi
+Conflicts: agente-gaudi
+Replaces: agente-gaudi
+Depends: libc6, libstdc++6, libgcc-s1, libasound2, libatk1.0-0, libcairo2, libdbus-1-3, libfontconfig1, libfreetype6, libgdk-pixbuf-2.0-0, libglib2.0-0, libgtk-3-0, libpango-1.0-0, libpangocairo-1.0-0, libpcsclite1, libx11-6, libxext6, libxi6, libxrender1, libxtst6, libxxf86vm1, libgl1, pcscd, xdg-utils, zlib1g
+Homepage: https://www.soportefirmadigital.com/
+Description: Agente GAUDI del Banco Central de Costa Rica
+ Cliente de firma digital con el entorno Java incluido por el proveedor.

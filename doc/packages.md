@@ -49,7 +49,7 @@ Agente GAUDI del BCCR con Java/JavaFX incluido.
 | Fedora 43    |             |         |
 | Ubuntu 26.04 | noble       |         |
 | Ubuntu 24.04 | noble       |         |
-| Ubuntu 22.04 |             |         |
+| Ubuntu 22.04 | jammy       |         |
 | Debian 13    | noble       |         |
 | Debian 12    | noble       |         |
 | NixOS 26.11  | nix         |         |
@@ -83,7 +83,7 @@ Firma de documentos con Firmador Libre.
 | Fedora 43    |             |         |
 | Ubuntu 26.04 | noble       |         |
 | Ubuntu 24.04 | noble       |         |
-| Ubuntu 22.04 |             |         |
+| Ubuntu 22.04 | jammy       |         |
 | Debian 13    | noble       |         |
 | Debian 12    | noble       |         |
 | NixOS 26.11  | nix         |         |

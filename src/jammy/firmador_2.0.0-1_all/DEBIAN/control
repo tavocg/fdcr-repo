@@ -1,0 +1,12 @@
+Package: firmador
+Version: 2.0.0-1
+Architecture: all
+Maintainer: Soporte Firma Digital
+Section: utils
+Priority: optional
+Depends: bash, openjdk-21-jre, libpcsclite1
+Recommends: idopte-p11
+Homepage: https://firmador.libre.cr/
+Description: Firmador Libre de documentos para Costa Rica
+ Firma digital de documentos mediante tarjetas y modulos PKCS#11.
+ Incluye la interfaz grafica y la integracion con enlaces firmador:.

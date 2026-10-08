@@ -1,0 +1,28 @@
+#!/bin/sh
+# Por alguna razón falta esta línea en el .desktop original de esta versión
+# `StartupWMClass=Agente GAUDI`, la agregamos manualmente.
+
+set -eu
+
+case "${1:-}" in
+configure)
+  desktop_file=/usr/share/applications/Agente-GAUDI.desktop
+  if [ ! -f "$desktop_file" ]; then
+    printf 'Required desktop file not found: %s\n' "$desktop_file" >&2
+    exit 1
+  fi
+
+  required_line='StartupWMClass=Agente GAUDI'
+  found=false
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [ "$line" = "$required_line" ]; then
+      found=true
+      break
+    fi
+  done <"$desktop_file"
+
+  if [ "$found" = false ]; then
+    printf '\n%s\n' "$required_line" >>"$desktop_file"
+  fi
+  ;;
+esac
