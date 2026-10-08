@@ -1,0 +1,10 @@
+Package: bccr-certs
+Version: 2026.08-1
+Architecture: all
+Maintainer: Soporte Firma Digital
+Section: misc
+Priority: optional
+Depends: ca-certificates, openssl
+Homepage: https://www.soportefirmadigital.com/
+Description: Certificados de Firma Digital de Costa Rica
+ Certificados originales, conjuntos PEM y registro de las CA raiz del proveedor.

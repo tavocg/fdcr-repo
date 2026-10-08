@@ -32,7 +32,7 @@ Interfaz gráfica de administración de Idopte.
 | Fedora 43    |             |         |
 | Ubuntu 26.04 | noble       |         |
 | Ubuntu 24.04 | noble       |         |
-| Ubuntu 22.04 |             |         |
+| Ubuntu 22.04 | jammy       |         |
 | Debian 13    | noble       |         |
 | Debian 12    | noble       |         |
 | NixOS 26.11  | nix         |         |
@@ -66,7 +66,7 @@ Certificados del proveedor y conjuntos PEM.
 | Fedora 43    |             |         |
 | Ubuntu 26.04 | noble       |         |
 | Ubuntu 24.04 | noble       |         |
-| Ubuntu 22.04 |             |         |
+| Ubuntu 22.04 | jammy       |         |
 | Debian 13    | noble       |         |
 | Debian 12    | noble       |         |
 | NixOS 26.11  | nix         |         |

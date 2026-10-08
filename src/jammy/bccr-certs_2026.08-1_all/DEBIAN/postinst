@@ -1,0 +1,69 @@
+#!/bin/sh
+set -eu
+case "${1:-}" in
+  configure)
+    staging=$(mktemp -d)
+    source_dir=/usr/share/bccr-certs/originals
+    export LC_ALL=C
+    mkdir -p "$staging/certificates" "$staging/roots"
+    : > "$staging/bundle.pem"
+    : > "$staging/ca-bundle.pem"
+    : > "$staging/roots.pem"
+    found=false
+
+    for certificate in "$source_dir"/*; do
+      [ -f "$certificate" ] || continue
+      found=true
+      temporary="$staging/certificate.tmp"
+      if ! openssl x509 -inform PEM -in "$certificate" -out "$temporary" 2>/dev/null; then
+        if ! openssl x509 -inform DER -in "$certificate" -out "$temporary"; then
+          echo "error: cannot parse certificate $certificate" >&2
+          rm -rf "$staging"
+          exit 1
+        fi
+      fi
+
+      fingerprint=$(openssl x509 -in "$temporary" -noout -fingerprint -sha256)
+      fingerprint=$(printf '%s' "${fingerprint#*=}" | tr -d ':')
+      pem="$staging/certificates/$fingerprint.pem"
+      if [ -f "$pem" ]; then
+        rm -f "$temporary"
+        continue
+      fi
+      mv "$temporary" "$pem"
+      cat "$pem" >> "$staging/bundle.pem"
+
+      constraints=$(openssl x509 -in "$pem" -noout -ext basicConstraints)
+      case "$constraints" in
+        *CA:TRUE*)
+          cat "$pem" >> "$staging/ca-bundle.pem"
+          subject=$(openssl x509 -in "$pem" -noout -subject -nameopt RFC2253)
+          issuer=$(openssl x509 -in "$pem" -noout -issuer -nameopt RFC2253)
+          if [ "${subject#subject=}" = "${issuer#issuer=}" ]; then
+            cp "$pem" "$staging/roots/$fingerprint.crt"
+            cat "$pem" >> "$staging/roots.pem"
+          fi
+          ;;
+      esac
+    done
+
+    if [ "$found" != true ] || [ ! -s "$staging/roots.pem" ]; then
+      echo "error: no self-signed CA certificates found in $source_dir" >&2
+      rm -rf "$staging"
+      exit 1
+    fi
+
+    install -d -m 755 /var/lib/bccr-certs /usr/local/share/ca-certificates/bccr
+    # Remove certificates from previous versions before installing the new set.
+    rm -f /usr/local/share/ca-certificates/bccr/*.crt
+    rm -f /var/lib/bccr-certs/certificates/*.pem
+    rm -f /var/lib/bccr-certs/roots/*.crt
+    install -d -m 755 /var/lib/bccr-certs/certificates /var/lib/bccr-certs/roots
+    install -m 644 "$staging"/certificates/*.pem /var/lib/bccr-certs/certificates/
+    install -m 644 "$staging"/roots/*.crt /var/lib/bccr-certs/roots/
+    install -m 644 "$staging"/*.pem /var/lib/bccr-certs/
+    install -m 644 "$staging"/roots/*.crt /usr/local/share/ca-certificates/bccr/
+    update-ca-certificates --fresh
+    rm -rf "$staging"
+    ;;
+esac

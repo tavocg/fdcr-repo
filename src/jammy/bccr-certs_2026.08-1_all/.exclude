@@ -1,0 +1,4 @@
+./.exclude
+./DEBIAN/control
+./DEBIAN/postinst
+./DEBIAN/postrm

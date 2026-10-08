@@ -1,0 +1,26 @@
+#!/bin/sh
+set -eu
+case "${1:-}" in
+  remove|purge)
+    rm -f /usr/local/share/ca-certificates/bccr/*.crt
+    if [ -d /usr/local/share/ca-certificates/bccr ]; then
+      rmdir /usr/local/share/ca-certificates/bccr
+    fi
+    rm -f /var/lib/bccr-certs/bundle.pem \
+      /var/lib/bccr-certs/ca-bundle.pem /var/lib/bccr-certs/roots.pem
+    rm -f /var/lib/bccr-certs/certificates/*.pem \
+      /var/lib/bccr-certs/roots/*.crt
+    if [ -d /var/lib/bccr-certs/certificates ]; then
+      rmdir /var/lib/bccr-certs/certificates
+    fi
+    if [ -d /var/lib/bccr-certs/roots ]; then
+      rmdir /var/lib/bccr-certs/roots
+    fi
+    if [ -d /var/lib/bccr-certs ]; then
+      rmdir /var/lib/bccr-certs
+    fi
+    if command -v update-ca-certificates >/dev/null 2>&1; then
+      update-ca-certificates --fresh
+    fi
+    ;;
+esac
