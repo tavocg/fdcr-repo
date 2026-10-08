@@ -1,4 +1,5 @@
 Name:           fdcr-middleware-idopte
+Epoch:          0
 Version:        6.23.50.5
 Release:        1%{?dist}
 Summary:        Middleware PKCS#11 Idopte para firma digital de Costa Rica
