@@ -5,7 +5,7 @@ Maintainer: Soporte Firma Digital
 Section: utils
 Priority: optional
 Depends: bash, openjdk-21-jre, libpcsclite1
-Recommends: fdcr-middleware-idopte
+Recommends: idopte-p11
 Homepage: https://firmador.libre.cr/
 Description: Firmador Libre de documentos para Costa Rica
  Firma digital de documentos mediante tarjetas y modulos PKCS#11.

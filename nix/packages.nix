@@ -2,9 +2,9 @@
 
 let
   packages = {
-    fdcr-bccr-certs = pkgs.callPackage ./fdcr-bccr-certs.nix { };
-    "fdcr-bccr-gaudi-29.0-1" = pkgs.callPackage ./fdcr-bccr-gaudi.nix { };
-    fdcr-bccr-gaudi = packages."fdcr-bccr-gaudi-29.0-1";
+    bccr-certs = pkgs.callPackage ./bccr-certs.nix { };
+    "bccr-gaudi-29.0-1" = pkgs.callPackage ./bccr-gaudi.nix { };
+    bccr-gaudi = packages."bccr-gaudi-29.0-1";
     firmador_1_9 = pkgs.callPackage ./packages/firmador/default.nix {
       version = "1.9.8";
       rev = "09953947a51d87c2a146189ec76b6c27ab6518a1";
@@ -27,17 +27,17 @@ let
 
     firmador = packages.firmador_2_0;
 
-    "fdcr-middleware-idopte-6.23.50.5-1" = pkgs.callPackage ./fdcr-middleware-idopte.nix {
+    "idopte-p11-6.23.50.5-1" = pkgs.callPackage ./idopte-p11.nix {
       version = "6.23.50.5-1";
     };
 
-    fdcr-middleware-idopte = packages."fdcr-middleware-idopte-6.23.50.5-1";
-    "fdcr-scmanager-6.23.50.5-1" = pkgs.callPackage ./fdcr-scmanager.nix {
+    idopte-p11 = packages."idopte-p11-6.23.50.5-1";
+    "idopte-scmanager-6.23.50.5-1" = pkgs.callPackage ./idopte-scmanager.nix {
       version = "6.23.50.5-1";
-      middleware = packages."fdcr-middleware-idopte-6.23.50.5-1";
+      middleware = packages."idopte-p11-6.23.50.5-1";
     };
-    fdcr-scmanager = packages."fdcr-scmanager-6.23.50.5-1";
-    default = packages.fdcr-middleware-idopte;
+    idopte-scmanager = packages."idopte-scmanager-6.23.50.5-1";
+    default = packages.idopte-p11;
   };
 in
 packages

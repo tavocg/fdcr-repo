@@ -38,10 +38,10 @@ let
   fdcr = inputs.fdcr.packages.${pkgs.stdenv.hostPlatform.system};
 in
 [
-  fdcr.fdcr-middleware-idopte
-  fdcr.fdcr-scmanager
-  fdcr.fdcr-bccr-gaudi
-  fdcr.fdcr-bccr-certs
+  fdcr.idopte-p11
+  fdcr.idopte-scmanager
+  fdcr.bccr-gaudi
+  fdcr.bccr-certs
   fdcr.firmador
 ]
 ```
@@ -68,7 +68,7 @@ let
   fdcr = inputs.fdcr.packages.${pkgs.stdenv.hostPlatform.system};
 in
 fdcr.firmador.override {
-  pkcs11Module = "${fdcr.fdcr-middleware-idopte}/lib/SCMiddleware/libidop11.so";
+  pkcs11Module = "${fdcr.idopte-p11}/lib/SCMiddleware/libidop11.so";
 }
 ```
 

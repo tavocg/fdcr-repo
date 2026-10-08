@@ -23,7 +23,7 @@ Instrucciones para configurar el repositorio e instalar los paquetes de Firma Di
 
 4. Instalar paquetes
   ```sh
-  sudo apt install fdcr-middleware-idopte
+  sudo apt install idopte-p11
   ```
 
 ## Fedora
@@ -51,7 +51,7 @@ Instrucciones para configurar el repositorio e instalar los paquetes de Firma Di
 
 3. Instalar paquetes
   ```sh
-  sudo dnf install fdcr-middleware-idopte
+  sudo dnf install idopte-p11
   ```
 
 ## Arch
@@ -76,5 +76,5 @@ Instrucciones para configurar el repositorio e instalar los paquetes de Firma Di
 
 3. Actualizar índice e instalar software
   ```sh
-  sudo pacman -Syu fdcr-middleware-idopte
+  sudo pacman -Syu idopte-p11
   ```

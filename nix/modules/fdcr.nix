@@ -5,7 +5,7 @@
 
     middleware =
       if system == "x86_64-linux" then
-        self.packages.x86_64-linux.fdcr-middleware-idopte
+        self.packages.x86_64-linux.idopte-p11
       else
         throw "FDCR: el middleware Idopte actualmente solo está disponible para x86_64-linux";
 
@@ -36,7 +36,7 @@
       enable = lib.mkEnableOption "las CA raíz de Firma Digital en el almacén del sistema";
       package = lib.mkOption {
         type = lib.types.package;
-        default = self.packages.${system}.fdcr-bccr-certs;
+        default = self.packages.${system}.bccr-certs;
         description = "Paquete de certificados y conjuntos PEM de Firma Digital.";
       };
     };
@@ -45,7 +45,7 @@
       enable = lib.mkEnableOption "el agente GAUDI y su inicio de sesión gráfico";
       package = lib.mkOption {
         type = lib.types.package;
-        default = self.packages.${system}.fdcr-bccr-gaudi;
+        default = self.packages.${system}.bccr-gaudi;
         description = "Paquete del agente GAUDI.";
       };
     };
@@ -54,7 +54,7 @@
       enable = lib.mkEnableOption "SCManager y su integración de escritorio";
       package = lib.mkOption {
         type = lib.types.package;
-        default = self.packages.${system}.fdcr-scmanager;
+        default = self.packages.${system}.idopte-scmanager;
         description = "Paquete SCManager con soporte para override de nautilusSupport.";
       };
       nautilus.enable = lib.mkOption {
@@ -74,7 +74,7 @@
 
     services.fdcr.middleware.enable = lib.mkDefault cfg.scmanager.enable;
     security.pki.certificateFiles = lib.mkIf cfg.certificates.enable [
-      "${cfg.certificates.package}/etc/ssl/certs/fdcr-roots.pem"
+      "${cfg.certificates.package}/etc/ssl/certs/bccr-roots.pem"
     ];
 
     environment.systemPackages =

@@ -15,10 +15,10 @@
         import nixpkgs {
           inherit system;
           config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [
-            "fdcr-middleware-idopte"
-            "fdcr-scmanager"
-            "fdcr-scmanager-unwrapped"
-            "fdcr-bccr-gaudi"
+            "idopte-p11"
+            "idopte-scmanager"
+            "idopte-scmanager-unwrapped"
+            "bccr-gaudi"
           ];
         }
       );

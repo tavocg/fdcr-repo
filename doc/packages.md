@@ -3,7 +3,7 @@
 Configura primero el repositorio siguiendo el [README](../README.md).
 Para instalar mediante Nix, consulta la [guía de Nix](nix.md).
 
-### `fdcr-middleware-idopte`
+### `idopte-p11`
 
 Acceso a la tarjeta mediante PKCS#11.
 
@@ -20,7 +20,7 @@ Acceso a la tarjeta mediante PKCS#11.
 | Debian 12    | noble       |         |
 | NixOS 26.11  | nix         |         |
 
-### `fdcr-scmanager`
+### `idopte-scmanager`
 
 Interfaz gráfica de administración de Idopte.
 
@@ -37,7 +37,7 @@ Interfaz gráfica de administración de Idopte.
 | Debian 12    | noble       |         |
 | NixOS 26.11  | nix         |         |
 
-### `fdcr-bccr-gaudi`
+### `bccr-gaudi`
 
 Agente GAUDI del BCCR con Java/JavaFX incluido.
 
@@ -54,7 +54,7 @@ Agente GAUDI del BCCR con Java/JavaFX incluido.
 | Debian 12    | noble       |         |
 | NixOS 26.11  | nix         |         |
 
-### `fdcr-bccr-certs`
+### `bccr-certs`
 
 Certificados del proveedor y conjuntos PEM.
 

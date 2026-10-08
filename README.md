@@ -16,7 +16,7 @@ curl -fsSL https://tavocg.github.io/fdcr-repo/install.sh | sudo sh
 Luego, instale el paquete con el gestor de tu distribución. Por ejemplo, en Ubuntu:
 
 ```sh
-sudo apt install fdcr-middleware-idopte
+sudo apt install idopte-p11
 ```
 
 Para configurar el repositorio sin el script, ver la
